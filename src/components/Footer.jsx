@@ -20,6 +20,11 @@ const Footer = () => {
                         <p className="text-gray-400 font-light text-sm leading-relaxed max-w-xs">
                             L'authenticité du Ramen japonais à Aix-en-Provence. Bouillons mijotés, nouilles artisanales et saveurs profondes.
                         </p>
+                        <div className="mt-4 p-3 bg-mitake-gold/10 border border-mitake-gold/30 rounded-lg">
+                            <p className="text-xs text-mitake-gold font-medium">
+                                🌾 Riz Bio Certifié AB & Saumon Label Rouge d'Écosse
+                            </p>
+                        </div>
                         <div className="flex gap-4">
                             <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-mitake-gold hover:text-black transition-all duration-300">
                                 <Instagram size={18} />
@@ -35,7 +40,7 @@ const Footer = () => {
                         <h4 className="text-lg font-serif font-bold text-mitake-gold">Nous Trouver</h4>
                         <div className="space-y-2 md:space-y-4 text-sm text-gray-400 font-light">
                             <p>569 Avenue Henri Mauriat<br />13100 Aix-en-Provence</p>
-                            <p>04 42 50 60 70<br />contact@mitake-ramen.com</p>
+                            <p>09 72 21 38 99<br />contact@mitake-ramen.com</p>
                         </div>
                     </div>
 
@@ -43,15 +48,15 @@ const Footer = () => {
                     <div className="space-y-4 md:space-y-6">
                         <h4 className="text-lg font-serif font-bold text-mitake-gold">Horaires</h4>
                         <div className="space-y-2 text-sm text-gray-400 font-light">
-                            <div className="flex justify-between max-w-[200px]">
-                                <span>Mardi - Samedi</span>
-                                <span>11h30 - 14h00</span>
+                            <div className="flex justify-between max-w-[240px]">
+                                <span>Mardi - Vendredi</span>
+                                <span>11h30-14h00 & 18h00-21h00</span>
                             </div>
-                            <div className="flex justify-between max-w-[200px]">
-                                <span>Mardi - Dimanche</span>
-                                <span>18h30 - 21h00</span>
+                            <div className="flex justify-between max-w-[240px]">
+                                <span>Samedi</span>
+                                <span>18h00 - 21h00</span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-4 italic">Fermé le Lundi soir & Samedi midi</p>
+                            <p className="text-xs text-gray-500 mt-4 italic">Fermé Dimanche & Lundi</p>
                         </div>
                     </div>
                 </div>

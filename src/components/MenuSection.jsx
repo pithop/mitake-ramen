@@ -14,21 +14,22 @@ const MenuSection = () => {
     const getCategories = (tab) => {
         switch (tab) {
             case 'atelier':
-                return ['TAPAS CHAUDS', 'PLATS CHAUDS'];
+                return ['NOS RAMENS AUTHENTIQUES', 'TAPAS & GYOZAS', 'PLATS CHAUDS & DONBURI'];
             case 'comptoir':
-                return ['SUSHI', 'SASHIMI', 'MAKI ET ROLLS', 'CHIRASHI', 'PLATEAUX COMBINES'];
+                return ['LE COMPTOIR SUSHI (KYO)'];
             default:
                 return [];
         }
     };
 
     const activeCategories = getCategories(activeTab);
-    const filteredMenu = MENU_DATA.menu.filter(cat => activeCategories.includes(cat.categorie));
+    // MENU_DATA is now an array directly, not an object with a menu property
+    const filteredMenu = MENU_DATA.filter(cat => activeCategories.includes(cat.title));
 
     // Reset expanded category when tab changes
     React.useEffect(() => {
         if (filteredMenu.length > 0) {
-            setExpandedCategory(filteredMenu[0].categorie);
+            setExpandedCategory(filteredMenu[0].title);
         } else {
             setExpandedCategory(null);
         }
@@ -98,19 +99,19 @@ const MenuSection = () => {
                                     {filteredMenu.map((category, idx) => (
                                         <div key={idx} className="border-b border-white/10 pb-4">
                                             <button
-                                                onClick={() => toggleCategory(category.categorie)}
+                                                onClick={() => toggleCategory(category.title)}
                                                 className="w-full flex justify-between items-center py-4 md:py-5 group min-h-[60px] touch-manipulation"
                                             >
                                                 <h3 className="text-xl md:text-3xl font-serif text-mitake-offwhite group-hover:text-mitake-gold transition-colors duration-300 italic text-left">
-                                                    {category.categorie}
+                                                    {category.title}
                                                 </h3>
                                                 <div className="text-mitake-gold/70 group-hover:text-mitake-gold transition-colors flex-shrink-0 ml-4">
-                                                    {expandedCategory === category.categorie ? <Minus size={24} className="md:w-7 md:h-7" /> : <Plus size={24} className="md:w-7 md:h-7" />}
+                                                    {expandedCategory === category.title ? <Minus size={24} className="md:w-7 md:h-7" /> : <Plus size={24} className="md:w-7 md:h-7" />}
                                                 </div>
                                             </button>
 
                                             <AnimatePresence>
-                                                {expandedCategory === category.categorie && (
+                                                {expandedCategory === category.title && (
                                                     <motion.div
                                                         initial={{ height: 0, opacity: 0 }}
                                                         animate={{ height: 'auto', opacity: 1 }}
@@ -119,8 +120,8 @@ const MenuSection = () => {
                                                         className="overflow-hidden"
                                                     >
                                                         <div className="space-y-4 py-4 md:py-6">
-                                                            {category.articles.map((item, i) => {
-                                                                const isUnavailable = unavailableItems.includes(item.titre);
+                                                            {category.items.map((item, i) => {
+                                                                const isUnavailable = unavailableItems.includes(item.name);
 
                                                                 return (
                                                                     <div
@@ -136,7 +137,7 @@ const MenuSection = () => {
                                                                                     ? 'text-gray-500'
                                                                                     : 'text-mitake-offwhite group-hover/item:text-mitake-gold transition-colors duration-300'
                                                                                     }`}>
-                                                                                    {item.titre}
+                                                                                    {item.name}
                                                                                 </h4>
                                                                                 {item.description && (
                                                                                     <p className="text-sm md:text-base text-gray-400 mt-1 font-light leading-relaxed">
@@ -147,7 +148,7 @@ const MenuSection = () => {
                                                                             <div className="flex flex-col items-end gap-3 shrink-0">
                                                                                 <span className={`font-serif text-base md:text-lg font-bold ${isUnavailable ? 'text-gray-600' : 'text-mitake-gold'
                                                                                     }`}>
-                                                                                    {item.prix}
+                                                                                    {item.price.toFixed(2)} €
                                                                                 </span>
                                                                                 {isUnavailable ? (
                                                                                     <span className="text-xs font-bold text-red-500 flex items-center gap-1 border border-red-500/30 px-2 py-1 rounded">
@@ -194,19 +195,19 @@ const MenuSection = () => {
                                     {filteredMenu.map((category, idx) => (
                                         <div key={idx} className="border-b border-white/10 pb-4">
                                             <button
-                                                onClick={() => toggleCategory(category.categorie)}
+                                                onClick={() => toggleCategory(category.title)}
                                                 className="w-full flex justify-between items-center py-4 md:py-5 group min-h-[60px] touch-manipulation"
                                             >
                                                 <h3 className="text-xl md:text-3xl font-serif text-mitake-offwhite group-hover:text-mitake-gold transition-colors duration-300 italic text-left">
-                                                    {category.categorie}
+                                                    {category.title}
                                                 </h3>
                                                 <div className="text-mitake-gold/70 group-hover:text-mitake-gold transition-colors flex-shrink-0 ml-4">
-                                                    {expandedCategory === category.categorie ? <Minus size={24} className="md:w-7 md:h-7" /> : <Plus size={24} className="md:w-7 md:h-7" />}
+                                                    {expandedCategory === category.title ? <Minus size={24} className="md:w-7 md:h-7" /> : <Plus size={24} className="md:w-7 md:h-7" />}
                                                 </div>
                                             </button>
 
                                             <AnimatePresence>
-                                                {expandedCategory === category.categorie && (
+                                                {expandedCategory === category.title && (
                                                     <motion.div
                                                         initial={{ height: 0, opacity: 0 }}
                                                         animate={{ height: 'auto', opacity: 1 }}
@@ -215,8 +216,8 @@ const MenuSection = () => {
                                                         className="overflow-hidden"
                                                     >
                                                         <div className="space-y-4 py-4 md:py-6">
-                                                            {category.articles.map((item, i) => {
-                                                                const isUnavailable = unavailableItems.includes(item.titre);
+                                                            {category.items.map((item, i) => {
+                                                                const isUnavailable = unavailableItems.includes(item.name);
 
                                                                 return (
                                                                     <div
@@ -232,7 +233,7 @@ const MenuSection = () => {
                                                                                     ? 'text-gray-500'
                                                                                     : 'text-mitake-offwhite group-hover/item:text-mitake-gold transition-colors duration-300'
                                                                                     }`}>
-                                                                                    {item.titre}
+                                                                                    {item.name}
                                                                                 </h4>
                                                                                 {item.description && (
                                                                                     <p className="text-sm md:text-base text-gray-400 mt-1 font-light leading-relaxed">
@@ -243,7 +244,7 @@ const MenuSection = () => {
                                                                             <div className="flex flex-col items-end gap-3 shrink-0">
                                                                                 <span className={`font-serif text-base md:text-lg font-bold ${isUnavailable ? 'text-gray-600' : 'text-mitake-gold'
                                                                                     }`}>
-                                                                                    {item.prix}
+                                                                                    {item.price.toFixed(2)} €
                                                                                 </span>
                                                                                 {isUnavailable ? (
                                                                                     <span className="text-xs font-bold text-red-500 flex items-center gap-1 border border-red-500/30 px-2 py-1 rounded">

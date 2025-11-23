@@ -80,7 +80,7 @@ const CartDrawer = () => {
                             ) : (
                                 cartItems.map((item, index) => (
                                     <motion.div
-                                        key={`${item.titre}-${index}`}
+                                        key={`${item.name}-${index}`}
                                         layout
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
@@ -88,8 +88,8 @@ const CartDrawer = () => {
                                         className="flex gap-3 sm:gap-4 bg-white/5 p-3 sm:p-4 rounded-lg border border-white/5"
                                     >
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-bold text-white text-base sm:text-lg">{item.titre}</h3>
-                                            <p className="text-mitake-gold text-sm sm:text-base">{item.prix}</p>
+                                            <h3 className="font-bold text-white text-base sm:text-lg">{item.name}</h3>
+                                            <p className="text-mitake-gold text-sm sm:text-base">{item.price.toFixed(2)} €</p>
                                             {item.kitchen_note && (
                                                 <p className="text-xs text-gray-400 mt-1 italic truncate">Note: {item.kitchen_note}</p>
                                             )}
@@ -97,7 +97,7 @@ const CartDrawer = () => {
 
                                         <div className="flex flex-col items-end justify-between gap-2">
                                             <button
-                                                onClick={() => removeFromCart(item.titre)}
+                                                onClick={() => removeFromCart(item.name)}
                                                 className="text-gray-500 hover:text-red-400 transition-colors text-xs"
                                             >
                                                 <X size={16} />
@@ -105,14 +105,14 @@ const CartDrawer = () => {
 
                                             <div className="flex items-center gap-2 sm:gap-3 bg-black/40 rounded-full p-1 border border-white/10">
                                                 <button
-                                                    onClick={() => updateQuantity(item.titre, -1)}
+                                                    onClick={() => updateQuantity(item.name, -1)}
                                                     className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white transition-colors"
                                                 >
                                                     <Minus size={14} />
                                                 </button>
                                                 <span className="font-mono font-bold w-4 text-center text-sm sm:text-base">{item.quantity}</span>
                                                 <button
-                                                    onClick={() => updateQuantity(item.titre, 1)}
+                                                    onClick={() => updateQuantity(item.name, 1)}
                                                     className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white transition-colors"
                                                 >
                                                     <Plus size={14} />

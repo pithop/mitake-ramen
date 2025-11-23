@@ -36,7 +36,7 @@ export const CartProvider = ({ children }) => {
 
     const addToCart = (item, quantity = 1, options = {}) => {
         // Check stock
-        if (unavailableItems.includes(item.titre)) {
+        if (unavailableItems.includes(item.name)) {
             alert("Désolé, cet article est en rupture de stock.");
             return;
         }
@@ -44,7 +44,7 @@ export const CartProvider = ({ children }) => {
         setCartItems(prevItems => {
             // Create a unique ID for the cart item based on product and options
             // For now, we'll just use the title as we don't have complex options yet
-            const existingItemIndex = prevItems.findIndex(i => i.titre === item.titre);
+            const existingItemIndex = prevItems.findIndex(i => i.name === item.name);
 
             if (existingItemIndex > -1) {
                 const newItems = [...prevItems];
@@ -58,13 +58,13 @@ export const CartProvider = ({ children }) => {
     };
 
     const removeFromCart = (itemTitle) => {
-        setCartItems(prevItems => prevItems.filter(item => item.titre !== itemTitle));
+        setCartItems(prevItems => prevItems.filter(item => item.name !== itemTitle));
     };
 
     const updateQuantity = (itemTitle, delta) => {
         setCartItems(prevItems => {
             return prevItems.map(item => {
-                if (item.titre === itemTitle) {
+                if (item.name === itemTitle) {
                     const newQuantity = Math.max(0, item.quantity + delta);
                     return { ...item, quantity: newQuantity };
                 }
@@ -79,10 +79,7 @@ export const CartProvider = ({ children }) => {
 
     const getCartTotal = () => {
         return cartItems.reduce((total, item) => {
-            // Parse price string "12,50 €" -> 12.50
-            const priceString = item.prix.replace(' €', '').replace(',', '.');
-            const price = parseFloat(priceString);
-            return total + (price * item.quantity);
+            return total + (item.price * item.quantity);
         }, 0);
     };
 
@@ -104,13 +101,10 @@ export const CartProvider = ({ children }) => {
 
             // LE PLUS IMPORTANT : MAPPING DES ITEMS
             items: cartItems.map(item => {
-                const priceString = item.prix.replace(' €', '').replace(',', '.');
-                const price = parseFloat(priceString);
-
                 return {
-                    name: item.titre,      // Le script Python cherche la clé 'name', pas 'title' !
+                    name: item.name,      // Le script Python cherche la clé 'name', pas 'title' !
                     quantity: item.quantity,    // Le script cherche 'quantity', pas 'amount' !
-                    price: price,
+                    price: item.price,
                     options: [], // No options implemented yet
                     comment: item.kitchen_note || "" // Toujours une string vide si null
                 };

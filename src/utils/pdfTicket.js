@@ -138,14 +138,13 @@ export const generateOrderTicket = (orderData, orderDetails, cartItems, total) =
             doc.rect(20, yPos - 5, 170, 7, 'F');
         }
 
-        const priceString = item.prix.replace(' €', '').replace(',', '.');
-        const unitPrice = parseFloat(priceString);
+        const unitPrice = item.price;
         const itemTotal = unitPrice * item.quantity;
 
         doc.text(`${item.quantity}`, 25, yPos);
 
         // Wrap long item names
-        const itemName = doc.splitTextToSize(item.titre, 90);
+        const itemName = doc.splitTextToSize(item.name, 90);
         doc.text(itemName, 45, yPos);
 
         doc.text(`${unitPrice.toFixed(2)} €`, 140, yPos);

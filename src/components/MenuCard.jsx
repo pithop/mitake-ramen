@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 
 const MenuCard = ({ item }) => {
     const { addToCart, unavailableItems } = useCart();
-    const isUnavailable = unavailableItems.includes(item.titre);
+    const isUnavailable = unavailableItems.includes(item.name);
 
     const handleAdd = (e) => {
         e.stopPropagation();
@@ -21,19 +21,19 @@ const MenuCard = ({ item }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className={`bg-black/50 p-6 rounded-sm border transition-all duration-300 flex flex-col justify-between h-full group backdrop-blur-sm relative overflow-hidden ${isUnavailable
-                    ? 'border-white/5 opacity-60 grayscale'
-                    : 'border-white/10 hover:border-mitake-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.15)]'
+                ? 'border-white/5 opacity-60 grayscale'
+                : 'border-white/10 hover:border-mitake-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.15)]'
                 }`}
         >
             <div>
                 <div className="flex justify-between items-start mb-3">
                     <h3 className={`font-serif font-bold text-lg transition-colors ${isUnavailable ? 'text-gray-500' : 'text-white group-hover:text-mitake-gold'
                         }`}>
-                        {item.titre}
+                        {item.name}
                     </h3>
                     <span className={`font-medium whitespace-nowrap ml-4 ${isUnavailable ? 'text-gray-600' : 'text-mitake-gold'
                         }`}>
-                        {item.prix}
+                        {item.price.toFixed(2)} €
                     </span>
                 </div>
                 {item.description && (

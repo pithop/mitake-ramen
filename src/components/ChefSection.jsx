@@ -42,6 +42,11 @@ const ChefSection = () => {
                             <p className="text-lg text-gray-600 leading-relaxed font-light mt-4">
                                 Envie de fraîcheur après la chaleur du bouillon ? Découvrez notre sélection exclusive de sushis, sashimis et rolls, préparés avec la même rigueur que nos ramen.
                             </p>
+                            <div className="mt-6 p-4 bg-kyo-indigo/5 border-l-4 border-kyo-indigo rounded">
+                                <p className="text-sm text-gray-700 italic">
+                                    Supervisé par le <span className="font-semibold text-kyo-indigo">Chef Kikuchi San</span>, 22 ans d'expérience.
+                                </p>
+                            </div>
                         </motion.div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">

@@ -76,26 +76,26 @@ const AdminDashboard = () => {
                     <p className="text-gray-400 text-sm mb-4">Cochez les articles en rupture de stock.</p>
 
                     <div className="space-y-2">
-                        {MENU_DATA.menu.map((category) => (
-                            <details key={category.categorie} className="group bg-white/5 rounded-lg border border-white/5 overflow-hidden">
+                        {MENU_DATA.map((category) => (
+                            <details key={category.title} className="group bg-white/5 rounded-lg border border-white/5 overflow-hidden">
                                 <summary className="p-4 cursor-pointer font-bold flex justify-between items-center hover:bg-white/10 transition-colors select-none">
-                                    {category.categorie}
+                                    {category.title}
                                     <span className="text-gray-500 text-sm group-open:rotate-180 transition-transform">▼</span>
                                 </summary>
                                 <div className="p-4 pt-0 space-y-3 bg-black/20">
-                                    {category.articles.map((item) => (
-                                        <div key={item.titre} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
-                                            <span className={localUnavailable.includes(item.titre) ? "text-gray-500 line-through" : "text-gray-200"}>
-                                                {item.titre}
+                                    {category.items.map((item) => (
+                                        <div key={item.name} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
+                                            <span className={localUnavailable.includes(item.name) ? "text-gray-500 line-through" : "text-gray-200"}>
+                                                {item.name}
                                             </span>
                                             <button
-                                                onClick={() => toggleItemAvailability(item.titre)}
-                                                className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${localUnavailable.includes(item.titre)
-                                                        ? 'bg-red-500/20 text-red-400 border border-red-500/50'
-                                                        : 'bg-green-500/20 text-green-400 border border-green-500/50'
+                                                onClick={() => toggleItemAvailability(item.name)}
+                                                className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${localUnavailable.includes(item.name)
+                                                    ? 'bg-red-500/20 text-red-400 border border-red-500/50'
+                                                    : 'bg-green-500/20 text-green-400 border border-green-500/50'
                                                     }`}
                                             >
-                                                {localUnavailable.includes(item.titre) ? 'ÉPUISÉ' : 'DISPO'}
+                                                {localUnavailable.includes(item.name) ? 'ÉPUISÉ' : 'DISPO'}
                                             </button>
                                         </div>
                                     ))}
