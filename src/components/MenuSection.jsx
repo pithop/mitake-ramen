@@ -3,6 +3,7 @@ import { MENU_DATA } from '../data/menu';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus, AlertCircle } from 'lucide-react';
 import yakitoriImage from '../assets/section-yakitori.png';
+import ramenChashuImage from '../assets/ramen-chashu.png';
 import sushiImage from '../assets/section-sushi.png';
 import { useCart } from '../context/CartContext';
 
@@ -85,10 +86,12 @@ const MenuSection = () => {
                         >
                             {/* Sticky Image Left */}
                             <div className="w-full lg:w-1/2 h-[30vh] md:h-[40vh] lg:h-auto lg:min-h-[60vh] lg:sticky lg:top-32 overflow-hidden self-start z-0">
-                                <div
-                                    className="w-full h-full min-h-[30vh] bg-cover bg-center transform hover:scale-105 transition-transform duration-[20s]"
-                                    style={{ backgroundImage: `url(${yakitoriImage})` }}
-                                >
+                                <div className="relative w-full h-full min-h-[30vh]">
+                                    <img
+                                        src={ramenChashuImage}
+                                        alt="Bol de Ramen Tonkotsu Chashu signature"
+                                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[20s]"
+                                    />
                                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-mitake-black pointer-events-none"></div>
                                 </div>
                             </div>
@@ -278,10 +281,12 @@ const MenuSection = () => {
 
                             {/* Sticky Image Right */}
                             <div className="w-full lg:w-1/2 h-[30vh] md:h-[40vh] lg:h-auto lg:min-h-[60vh] lg:sticky lg:top-32 overflow-hidden self-start z-0">
-                                <div
-                                    className="w-full h-full min-h-[30vh] bg-cover bg-center transform hover:scale-105 transition-transform duration-[20s]"
-                                    style={{ backgroundImage: `url(${sushiImage})` }}
-                                >
+                                <div className="relative w-full h-full min-h-[30vh]">
+                                    <img
+                                        src={sushiImage}
+                                        alt="Assortiment de Sushis et Makis"
+                                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[20s]"
+                                    />
                                     <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-transparent to-transparent lg:bg-gradient-to-l lg:from-transparent lg:to-mitake-black pointer-events-none"></div>
                                 </div>
                             </div>

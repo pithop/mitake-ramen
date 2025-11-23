@@ -62,7 +62,7 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-                    <p className="text-xs text-gray-600">© 2024 Mitake Ramen. Tous droits réservés.</p>
+                    <p className="text-xs text-gray-600">© 2025 Mitake Ramen. Tous droits réservés.</p>
                     <div className="flex gap-6 text-xs text-gray-500">
                         <a href="#" className="hover:text-mitake-gold transition-colors">Mentions Légales</a>
                         <a href="#" className="hover:text-mitake-gold transition-colors">Politique de Confidentialité</a>
