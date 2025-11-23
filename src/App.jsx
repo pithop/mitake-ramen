@@ -10,7 +10,7 @@ import CartDrawer from './components/CartDrawer';
 import OrderModeModal from './components/OrderModeModal';
 import FloatingCartButton from './components/FloatingCartButton';
 import AdminDashboard from './pages/AdminDashboard';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 
 // Wrapper component to access context for OrderModeModal
 const AppContent = () => {
@@ -18,6 +18,7 @@ const AppContent = () => {
 
   return (
     <>
+      <Analytics />
       <OrderModeModal
         isOpen={isOrderModeModalOpen}
         onClose={() => setIsOrderModeModalOpen(false)}
