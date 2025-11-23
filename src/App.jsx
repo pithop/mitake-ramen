@@ -10,6 +10,7 @@ import CartDrawer from './components/CartDrawer';
 import OrderModeModal from './components/OrderModeModal';
 import FloatingCartButton from './components/FloatingCartButton';
 import AdminDashboard from './pages/AdminDashboard';
+import { Analytics } from "@vercel/analytics/next"
 
 // Wrapper component to access context for OrderModeModal
 const AppContent = () => {
