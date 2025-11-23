@@ -27,7 +27,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={
           <div className="min-h-screen bg-mitake-black text-mitake-offwhite font-sans selection:bg-mitake-gold selection:text-black overflow-x-hidden">
-            <div className="noise-overlay"></div>
+            <div className="noise-overlay pointer-events-none"></div>
             <main>
               <Hero />
               <PhilosophySection />

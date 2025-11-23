@@ -57,57 +57,57 @@ const OrderModeModal = ({ isOpen, onClose }) => {
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    className="bg-mitake-black border border-white/10 rounded-lg shadow-2xl w-full max-w-4xl overflow-hidden relative"
+                    className="bg-mitake-black border border-white/10 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative flex flex-col"
                 >
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10"
                     >
                         <X size={24} />
                     </button>
 
-                    <div className="p-8">
-                        <h2 className="text-3xl font-serif font-bold text-white mb-2 text-center">Comment souhaitez-vous commander ?</h2>
-                        <p className="text-gray-400 text-center mb-8">Choisissez votre mode de dégustation</p>
+                    <div className="p-6 md:p-8 overflow-y-auto flex-1">
+                        <h2 className="text-2xl md:text-3xl font-serif font-bold text-white mb-2 text-center">Comment souhaitez-vous commander ?</h2>
+                        <p className="text-gray-400 text-center mb-6 md:mb-8">Choisissez votre mode de dégustation</p>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
                             {/* Dine In */}
                             <button
                                 onClick={() => setSelectedMode('dine_in')}
-                                className={`p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-4 group ${selectedMode === 'dine_in'
+                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group ${selectedMode === 'dine_in'
                                     ? 'bg-mitake-gold/10 border-mitake-gold text-mitake-gold'
                                     : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'
                                     }`}
                             >
-                                <Utensils size={48} className={selectedMode === 'dine_in' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'} />
-                                <span className="text-xl font-bold">Sur Place</span>
+                                <Utensils size={40} className={`md:w-12 md:h-12 ${selectedMode === 'dine_in' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'}`} />
+                                <span className="text-lg md:text-xl font-bold">Sur Place</span>
                             </button>
 
                             {/* Takeaway */}
                             <button
                                 onClick={() => setSelectedMode('takeaway')}
-                                className={`p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-4 group ${selectedMode === 'takeaway'
+                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group ${selectedMode === 'takeaway'
                                     ? 'bg-mitake-gold/10 border-mitake-gold text-mitake-gold'
                                     : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'
                                     }`}
                             >
-                                <ShoppingBag size={48} className={selectedMode === 'takeaway' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'} />
-                                <span className="text-xl font-bold">À Emporter</span>
+                                <ShoppingBag size={40} className={`md:w-12 md:h-12 ${selectedMode === 'takeaway' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'}`} />
+                                <span className="text-lg md:text-xl font-bold">À Emporter</span>
                             </button>
 
                             {/* Delivery */}
                             <button
                                 onClick={() => isDeliveryAvailable && setSelectedMode('delivery')}
                                 disabled={!isDeliveryAvailable}
-                                className={`p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-4 group relative ${!isDeliveryAvailable
+                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group relative ${!isDeliveryAvailable
                                     ? 'opacity-50 cursor-not-allowed bg-white/5 border-white/5'
                                     : selectedMode === 'delivery'
                                         ? 'bg-mitake-gold/10 border-mitake-gold text-mitake-gold'
                                         : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'
                                     }`}
                             >
-                                <MapPin size={48} className={selectedMode === 'delivery' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'} />
-                                <span className="text-xl font-bold">Livraison</span>
+                                <MapPin size={40} className={`md:w-12 md:h-12 ${selectedMode === 'delivery' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'}`} />
+                                <span className="text-lg md:text-xl font-bold">Livraison</span>
                                 {!isDeliveryAvailable && (
                                     <span className="absolute bottom-2 text-xs text-red-400 font-medium">Pas de livreur ce soir</span>
                                 )}
@@ -123,7 +123,7 @@ const OrderModeModal = ({ isOpen, onClose }) => {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -20 }}
                                     onSubmit={handleSubmit}
-                                    className="space-y-6 bg-white/5 p-6 rounded-xl border border-white/10"
+                                    className="space-y-4 md:space-y-6 bg-white/5 p-4 md:p-6 rounded-xl border border-white/10 max-h-[60vh] overflow-y-auto"
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -212,7 +212,7 @@ const OrderModeModal = ({ isOpen, onClose }) => {
 
                                     <button
                                         type="submit"
-                                        className="w-full bg-mitake-gold text-black font-bold py-4 rounded-lg hover:bg-white transition-colors mt-4"
+                                        className="w-full bg-mitake-gold text-black font-bold py-3 md:py-4 rounded-lg hover:bg-white transition-colors mt-4"
                                     >
                                         Confirmer le mode
                                     </button>
