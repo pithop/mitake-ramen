@@ -102,6 +102,7 @@ const Hero = () => {
                                 {char}
                             </motion.span>
                         ))}
+                        <span className="sr-only">Aix-en-Provence</span>
                     </h1>
                 </div>
 

@@ -1,8 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin-mitake
 
-# Sitemap
-Sitemap: https://mitake-ramen.fr/sitemap.xml
-
-# Crawl delay (optionnel, pour éviter surcharge serveur)
-Crawl-delay: 10
+Sitemap: https://mitakeramen.page/sitemap.xml

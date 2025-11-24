@@ -103,7 +103,7 @@ const ChefSection = () => {
                             <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
                                 <img
                                     src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=2070&auto=format&fit=crop"
-                                    alt="Kyo Sushi Platter"
+                                    alt="Plateau de Sushis Kyo Sushi frais et variés"
                                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                                 />
                             </div>
