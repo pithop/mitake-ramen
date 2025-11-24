@@ -1,18 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useCart } from '../context/CartContext';
 import { MENU_DATA } from '../data/menu';
-import { Save, Power, AlertTriangle } from 'lucide-react';
+import { Save, Power, TrendingUp, DollarSign, Calendar } from 'lucide-react';
+import AdminLogin from '../components/AdminLogin';
+import { supabase } from '../supabaseClient';
+
+// Lazy load the chart component
+const RevenueChart = React.lazy(() => import('../components/RevenueChart'));
 
 const AdminDashboard = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const {
         isDeliveryAvailable,
-        setIsDeliveryAvailable,
         unavailableItems,
-        setUnavailableItems
+        updateSettings // New function from context
     } = useCart();
 
     const [localUnavailable, setLocalUnavailable] = useState([...unavailableItems]);
     const [localDelivery, setLocalDelivery] = useState(isDeliveryAvailable);
+
+    // Sync local state when global state changes (e.g. from other admins or initial load)
+    useEffect(() => {
+        setLocalUnavailable([...unavailableItems]);
+        setLocalDelivery(isDeliveryAvailable);
+    }, [unavailableItems, isDeliveryAvailable]);
+
+    // Data States
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    // Fetch Orders on Auth
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchOrders();
+        }
+    }, [isAuthenticated]);
+
+    const fetchOrders = async () => {
+        setLoading(true);
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        const { data, error } = await supabase
+            .from('orders')
+            .select('*')
+            .gte('created_at', sevenDaysAgo.toISOString())
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching orders:', error);
+        } else {
+            setOrders(data || []);
+        }
+        setLoading(false);
+    };
+
+    // KPI Calculations
+    const kpis = useMemo(() => {
+        const today = new Date().toDateString();
+        const now = new Date();
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1)); // Monday
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        let dailyRevenue = 0;
+        let weeklyRevenue = 0;
+        const dailyOrders = [];
+
+        orders.forEach(order => {
+            const orderDate = new Date(order.created_at);
+            const orderDateString = orderDate.toDateString();
+
+            // Daily
+            if (orderDateString === today) {
+                dailyRevenue += order.total_price || 0;
+                dailyOrders.push(order);
+            }
+
+            // Weekly
+            if (orderDate >= startOfWeek) {
+                weeklyRevenue += order.total_price || 0;
+            }
+        });
+
+        // Chart Data (Last 7 Days)
+        const chartData = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+            const dayRevenue = orders
+                .filter(o => new Date(o.created_at).toDateString() === d.toDateString())
+                .reduce((sum, o) => sum + (o.total_price || 0), 0);
+
+            chartData.push({ name: dateStr, ca: dayRevenue });
+        }
+
+        return { dailyRevenue, weeklyRevenue, chartData };
+    }, [orders]);
 
     const toggleItemAvailability = (itemTitle) => {
         if (localUnavailable.includes(itemTitle)) {
@@ -22,23 +106,18 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleSave = () => {
-        setIsDeliveryAvailable(localDelivery);
-        setUnavailableItems(localUnavailable);
-
-        // Persist to localStorage
-        const stateToSave = {
-            delivery: localDelivery,
-            stock: localUnavailable
-        };
-        localStorage.setItem('mitake_admin_state', JSON.stringify(stateToSave));
-
-        alert("Configuration sauvegardée !");
+    const handleSave = async () => {
+        await updateSettings(localDelivery, localUnavailable);
+        alert("Configuration sauvegardée et synchronisée !");
     };
+
+    if (!isAuthenticated) {
+        return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
+    }
 
     return (
         <div className="min-h-screen bg-mitake-black text-white p-4 pb-20">
-            <div className="max-w-2xl mx-auto space-y-8">
+            <div className="max-w-4xl mx-auto space-y-8">
                 <header className="flex justify-between items-center border-b border-white/10 pb-4">
                     <h1 className="text-2xl font-serif font-bold text-mitake-gold">Chef Dashboard</h1>
                     <button
@@ -48,6 +127,39 @@ const AdminDashboard = () => {
                         <Save size={18} /> Sauvegarder
                     </button>
                 </header>
+
+                {/* KPIs */}
+                <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white/5 p-6 rounded-xl border border-white/10 flex items-center justify-between">
+                        <div>
+                            <p className="text-gray-400 text-sm">CA du Jour</p>
+                            <p className="text-3xl font-bold text-mitake-gold">{kpis.dailyRevenue.toFixed(2)}€</p>
+                        </div>
+                        <div className="p-3 bg-mitake-gold/10 rounded-full">
+                            <DollarSign className="text-mitake-gold" size={24} />
+                        </div>
+                    </div>
+                    <div className="bg-white/5 p-6 rounded-xl border border-white/10 flex items-center justify-between">
+                        <div>
+                            <p className="text-gray-400 text-sm">CA Semaine</p>
+                            <p className="text-3xl font-bold text-white">{kpis.weeklyRevenue.toFixed(2)}€</p>
+                        </div>
+                        <div className="p-3 bg-white/10 rounded-full">
+                            <TrendingUp className="text-white" size={24} />
+                        </div>
+                    </div>
+                </section>
+
+                {/* Chart */}
+                <section className="bg-white/5 p-6 rounded-xl border border-white/10">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                        <Calendar size={20} className="text-mitake-gold" />
+                        Performance (7 derniers jours)
+                    </h2>
+                    <Suspense fallback={<div className="h-64 w-full flex items-center justify-center text-gray-500">Chargement du graphique...</div>}>
+                        <RevenueChart data={kpis.chartData} />
+                    </Suspense>
+                </section>
 
                 {/* Master Switch */}
                 <section className="bg-white/5 p-6 rounded-xl border border-white/10">
@@ -90,10 +202,10 @@ const AdminDashboard = () => {
                                             </span>
                                             <button
                                                 onClick={() => toggleItemAvailability(item.name)}
-                                                className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${localUnavailable.includes(item.name)
+                                                className={`px - 3 py - 1 rounded - full text - xs font - bold transition - colors ${localUnavailable.includes(item.name)
                                                     ? 'bg-red-500/20 text-red-400 border border-red-500/50'
                                                     : 'bg-green-500/20 text-green-400 border border-green-500/50'
-                                                    }`}
+                                                    } `}
                                             >
                                                 {localUnavailable.includes(item.name) ? 'ÉPUISÉ' : 'DISPO'}
                                             </button>

@@ -24,15 +24,60 @@ export const CartProvider = ({ children }) => {
     const [isDeliveryAvailable, setIsDeliveryAvailable] = useState(true);
     const [unavailableItems, setUnavailableItems] = useState([]); // Array of item IDs (using titles as IDs for now if no explicit ID)
 
-    // Load admin state from localStorage on mount
+    // Load admin state from Supabase on mount & Subscribe to changes
     useEffect(() => {
-        const savedAdminState = localStorage.getItem('mitake_admin_state');
-        if (savedAdminState) {
-            const { delivery, stock } = JSON.parse(savedAdminState);
-            if (delivery !== undefined) setIsDeliveryAvailable(delivery);
-            if (stock) setUnavailableItems(stock);
-        }
+        fetchSettings();
+
+        // Realtime Subscription
+        const settingsSubscription = supabase
+            .channel('public:settings')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings' }, (payload) => {
+                console.log('🔄 Realtime Update:', payload);
+                const { is_delivery_available, unavailable_items } = payload.new;
+                setIsDeliveryAvailable(is_delivery_available);
+                setUnavailableItems(unavailable_items || []);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(settingsSubscription);
+        };
     }, []);
+
+    const fetchSettings = async () => {
+        const { data, error } = await supabase
+            .from('settings')
+            .select('*')
+            .single();
+
+        if (error) {
+            console.error('Error fetching settings:', error);
+            // Fallback to defaults if table is empty or error
+        } else if (data) {
+            setIsDeliveryAvailable(data.is_delivery_available);
+            setUnavailableItems(data.unavailable_items || []);
+        }
+    };
+
+    const updateSettings = async (newDeliveryStatus, newUnavailableItems) => {
+        // Optimistic Update
+        setIsDeliveryAvailable(newDeliveryStatus);
+        setUnavailableItems(newUnavailableItems);
+
+        const { error } = await supabase
+            .from('settings')
+            .update({
+                is_delivery_available: newDeliveryStatus,
+                unavailable_items: newUnavailableItems
+            })
+            .eq('id', 1); // Assuming single row with ID 1
+
+        if (error) {
+            console.error('Error updating settings:', error);
+            alert("Erreur lors de la sauvegarde des paramètres.");
+            // Revert? For now, we trust the optimistic update or next fetch
+        }
+    };
 
     const addToCart = (item, quantity = 1, options = {}) => {
         // Check stock
@@ -164,6 +209,7 @@ export const CartProvider = ({ children }) => {
         setIsDeliveryAvailable, // Exposed for Admin
         unavailableItems,
         setUnavailableItems, // Exposed for Admin
+        updateSettings, // Exposed for Admin
         submitOrderToPOS
     };
 
