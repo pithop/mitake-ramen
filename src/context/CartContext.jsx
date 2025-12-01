@@ -79,7 +79,7 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    const addToCart = (item, quantity = 1, options = {}) => {
+    const addToCart = (item, quantity = 1, options = []) => {
         // Check stock
         if (unavailableItems.includes(item.name)) {
             alert("Désolé, cet article est en rupture de stock.");
@@ -88,28 +88,36 @@ export const CartProvider = ({ children }) => {
 
         setCartItems(prevItems => {
             // Create a unique ID for the cart item based on product and options
-            // For now, we'll just use the title as we don't have complex options yet
-            const existingItemIndex = prevItems.findIndex(i => i.name === item.name);
+            // We'll use a composite key or just check deep equality of options
+            const existingItemIndex = prevItems.findIndex(i =>
+                i.name === item.name &&
+                JSON.stringify(i.selectedOptions) === JSON.stringify(options)
+            );
 
             if (existingItemIndex > -1) {
                 const newItems = [...prevItems];
                 newItems[existingItemIndex].quantity += quantity;
                 return newItems;
             } else {
-                return [...prevItems, { ...item, quantity, ...options }];
+                return [...prevItems, {
+                    ...item,
+                    quantity,
+                    selectedOptions: options,
+                    cartId: `${item.name}-${Date.now()}` // Unique ID for React keys if needed
+                }];
             }
         });
         setIsCartOpen(true);
     };
 
-    const removeFromCart = (itemTitle) => {
-        setCartItems(prevItems => prevItems.filter(item => item.name !== itemTitle));
+    const removeFromCart = (itemCartId) => {
+        setCartItems(prevItems => prevItems.filter(item => item.cartId !== itemCartId));
     };
 
-    const updateQuantity = (itemTitle, delta) => {
+    const updateQuantity = (itemCartId, delta) => {
         setCartItems(prevItems => {
             return prevItems.map(item => {
-                if (item.name === itemTitle) {
+                if (item.cartId === itemCartId) {
                     const newQuantity = Math.max(0, item.quantity + delta);
                     return { ...item, quantity: newQuantity };
                 }
@@ -124,7 +132,8 @@ export const CartProvider = ({ children }) => {
 
     const getCartTotal = () => {
         return cartItems.reduce((total, item) => {
-            return total + (item.price * item.quantity);
+            const optionsPrice = item.selectedOptions ? item.selectedOptions.reduce((acc, opt) => acc + opt.price, 0) : 0;
+            return total + ((item.price + optionsPrice) * item.quantity);
         }, 0);
     };
 
@@ -146,12 +155,13 @@ export const CartProvider = ({ children }) => {
 
             // LE PLUS IMPORTANT : MAPPING DES ITEMS
             items: cartItems.map(item => {
+                const optionsPrice = item.selectedOptions ? item.selectedOptions.reduce((acc, opt) => acc + opt.price, 0) : 0;
                 return {
-                    name: item.name,      // Le script Python cherche la clé 'name', pas 'title' !
-                    quantity: item.quantity,    // Le script cherche 'quantity', pas 'amount' !
-                    price: item.price,
-                    options: [], // No options implemented yet
-                    comment: item.kitchen_note || "" // Toujours une string vide si null
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price + optionsPrice, // Unit price including options
+                    options: item.selectedOptions || [],
+                    comment: item.kitchen_note || ""
                 };
             })
         };

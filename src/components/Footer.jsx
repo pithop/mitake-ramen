@@ -66,7 +66,7 @@ const Footer = () => {
                     <div className="flex gap-6 text-xs text-gray-500">
                         <a href="#" className="hover:text-mitake-gold transition-colors">Mentions Légales</a>
                         <a href="#" className="hover:text-mitake-gold transition-colors">Politique de Confidentialité</a>
-                        <a href="/admin-mitake" className="hover:text-mitake-gold transition-colors opacity-50 hover:opacity-100">Staff</a>
+                        <a href="/admin/manager" className="hover:text-mitake-gold transition-colors opacity-50 hover:opacity-100">Staff</a>
                     </div>
 
                     {/* Scroll to Top Button */}

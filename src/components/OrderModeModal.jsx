@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, ShoppingBag, Utensils, X, Clock, User, Phone, MessageSquare } from 'lucide-react';
+import { MapPin, ShoppingBag, Utensils, X, Clock, User, Phone, MessageSquare, CheckCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const OrderModeModal = ({ isOpen, onClose }) => {
@@ -187,13 +187,26 @@ const OrderModeModal = ({ isOpen, onClose }) => {
                                             <label className="text-sm text-gray-400 flex items-center gap-2">
                                                 <MapPin size={16} /> Adresse de livraison
                                             </label>
-                                            <textarea
-                                                required
-                                                value={address}
-                                                onChange={(e) => setAddress(e.target.value)}
-                                                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-mitake-gold outline-none transition-colors min-h-[100px]"
-                                                placeholder="Adresse complète, digicode, étage..."
-                                            />
+                                            <div className="relative">
+                                                <textarea
+                                                    required
+                                                    value={address}
+                                                    onChange={(e) => setAddress(e.target.value)}
+                                                    className={`w-full bg-black/50 border rounded-lg p-3 text-white outline-none transition-colors min-h-[100px] pr-10 ${address.length > 10
+                                                        ? 'border-green-500/50 focus:border-green-500'
+                                                        : 'border-white/10 focus:border-mitake-gold'
+                                                        }`}
+                                                    placeholder="Adresse complète, digicode, étage..."
+                                                />
+                                                {address.length > 10 && (
+                                                    <div className="absolute top-3 right-3 text-green-500">
+                                                        <CheckCircle size={20} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {address.length > 0 && address.length <= 10 && (
+                                                <p className="text-xs text-red-400">L'adresse semble un peu courte...</p>
+                                            )}
                                         </div>
                                     )}
 
@@ -212,7 +225,11 @@ const OrderModeModal = ({ isOpen, onClose }) => {
 
                                     <button
                                         type="submit"
-                                        className="w-full bg-mitake-gold text-black font-bold py-3 md:py-4 rounded-lg hover:bg-white transition-colors mt-4"
+                                        disabled={selectedMode === 'delivery' && address.length <= 10}
+                                        className={`w-full font-bold py-3 md:py-4 rounded-lg transition-colors mt-4 ${selectedMode === 'delivery' && address.length <= 10
+                                            ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                                            : 'bg-mitake-gold text-black hover:bg-white'
+                                            }`}
                                     >
                                         Confirmer le mode
                                     </button>

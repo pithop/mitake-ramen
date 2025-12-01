@@ -80,7 +80,7 @@ const CartDrawer = () => {
                             ) : (
                                 cartItems.map((item, index) => (
                                     <motion.div
-                                        key={`${item.name}-${index}`}
+                                        key={item.cartId}
                                         layout
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
@@ -89,7 +89,19 @@ const CartDrawer = () => {
                                     >
                                         <div className="flex-1 min-w-0">
                                             <h3 className="font-bold text-white text-base sm:text-lg">{item.name}</h3>
-                                            <p className="text-mitake-gold text-sm sm:text-base">{item.price.toFixed(2)} €</p>
+                                            <p className="text-mitake-gold text-sm sm:text-base">
+                                                {((item.price + (item.selectedOptions ? item.selectedOptions.reduce((acc, opt) => acc + opt.price, 0) : 0)) * item.quantity).toFixed(2)} €
+                                            </p>
+                                            {item.selectedOptions && item.selectedOptions.length > 0 && (
+                                                <div className="text-xs text-gray-400 mt-1 space-y-0.5">
+                                                    {item.selectedOptions.map((opt, i) => (
+                                                        <div key={i} className="flex justify-between">
+                                                            <span>+ {opt.name}</span>
+                                                            <span>{opt.price > 0 ? `+${opt.price.toFixed(2)}€` : ''}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                             {item.kitchen_note && (
                                                 <p className="text-xs text-gray-400 mt-1 italic truncate">Note: {item.kitchen_note}</p>
                                             )}
@@ -97,7 +109,7 @@ const CartDrawer = () => {
 
                                         <div className="flex flex-col items-end justify-between gap-2">
                                             <button
-                                                onClick={() => removeFromCart(item.name)}
+                                                onClick={() => removeFromCart(item.cartId)}
                                                 className="text-gray-500 hover:text-red-400 transition-colors text-xs"
                                             >
                                                 <X size={16} />
@@ -105,14 +117,14 @@ const CartDrawer = () => {
 
                                             <div className="flex items-center gap-2 sm:gap-3 bg-black/40 rounded-full p-1 border border-white/10">
                                                 <button
-                                                    onClick={() => updateQuantity(item.name, -1)}
+                                                    onClick={() => updateQuantity(item.cartId, -1)}
                                                     className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white transition-colors"
                                                 >
                                                     <Minus size={14} />
                                                 </button>
                                                 <span className="font-mono font-bold w-4 text-center text-sm sm:text-base">{item.quantity}</span>
                                                 <button
-                                                    onClick={() => updateQuantity(item.name, 1)}
+                                                    onClick={() => updateQuantity(item.cartId, 1)}
                                                     className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white transition-colors"
                                                 >
                                                     <Plus size={14} />
