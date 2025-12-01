@@ -74,14 +74,14 @@ function App() {
                     "image": "https://mitakeramen.page/assets/hero-ramen.png",
                     "@id": "https://mitakeramen.page",
                     "url": "https://mitakeramen.page",
-                    "telephone": "",
+                    "telephone": "+33972213899",
                     "menu": "https://mitakeramen.page/#menu",
                     "acceptsReservations": true,
                     "servesCuisine": ["Ramen", "Japanese", "Tonkotsu", "Gyoza", "Nouilles Japonaises"],
                     "priceRange": "€€",
                     "address": {
                       "@type": "PostalAddress",
-                      "streetAddress": "Aix-en-Provence",
+                      "streetAddress": "569 Av. Henri Mauriat, 13100 Aix-en-Provence",
                       "addressLocality": "Aix-en-Provence",
                       "addressRegion": "Provence-Alpes-Côte d'Azur",
                       "postalCode": "13100",
@@ -89,8 +89,8 @@ function App() {
                     },
                     "geo": {
                       "@type": "GeoCoordinates",
-                      "latitude": 43.5297,
-                      "longitude": 5.4474
+                      "latitude": 43.5263,
+                      "longitude": 5.4454
                     },
                     "areaServed": [
                       {
@@ -105,6 +105,10 @@ function App() {
                         "@type": "State",
                         "name": "Bouches-du-Rhône"
                       }
+                    ],
+                    "sameAs": [
+                      "https://www.instagram.com/mitake.ramen",
+                      "https://www.facebook.com/mitakeramen"
                     ],
                     "openingHoursSpecification": [
                       {
