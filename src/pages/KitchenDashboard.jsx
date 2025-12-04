@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { Clock, CheckCircle, AlertTriangle, Volume2, VolumeX, Flame, Loader2 } from 'lucide-react';
+import { Clock, CheckCircle, AlertTriangle, Volume2, VolumeX, Flame, Loader2, History, LayoutGrid } from 'lucide-react';
 import AdminNavbar from '../components/AdminNavbar';
 import { safeJSONParse } from '../utils/helpers';
 import OrderDetailsModal from '../components/OrderDetailsModal';
+import OrderHistoryTable from '../components/OrderHistoryTable';
 
 const KitchenDashboard = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [soundEnabled, setSoundEnabled] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [activeTab, setActiveTab] = useState('active'); // 'active' or 'history'
 
     // Refs for stable access in callbacks
     const soundEnabledRef = useRef(soundEnabled);
@@ -166,13 +168,44 @@ const KitchenDashboard = () => {
 
             <div className="p-4">
                 {/* Header */}
-                <header className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                    <h1 className="text-3xl font-serif font-bold text-mitake-gold flex items-center gap-3">
-                        <Flame className="text-orange-500" />
-                        Cuisine (KDS)
-                    </h1>
+                <header className="flex flex-col md:flex-row justify-between items-center mb-6 border-b border-white/10 pb-4 gap-4">
+                    <div className="flex items-center gap-6">
+                        <h1 className="text-3xl font-serif font-bold text-mitake-gold flex items-center gap-3">
+                            <Flame className="text-orange-500" />
+                            Cuisine (KDS)
+                        </h1>
+
+                        {/* Tabs */}
+                        <div className="flex bg-white/10 p-1 rounded-lg">
+                            <button
+                                onClick={() => setActiveTab('active')}
+                                className={`px-4 py-2 rounded-md flex items-center gap-2 font-bold transition-all ${activeTab === 'active'
+                                        ? 'bg-mitake-gold text-black shadow-lg'
+                                        : 'text-gray-400 hover:text-white'
+                                    }`}
+                            >
+                                <LayoutGrid size={18} />
+                                En Cours
+                                {orders.length > 0 && (
+                                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                        {orders.length}
+                                    </span>
+                                )}
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('history')}
+                                className={`px-4 py-2 rounded-md flex items-center gap-2 font-bold transition-all ${activeTab === 'history'
+                                        ? 'bg-mitake-gold text-black shadow-lg'
+                                        : 'text-gray-400 hover:text-white'
+                                    }`}
+                            >
+                                <History size={18} />
+                                Historique
+                            </button>
+                        </div>
+                    </div>
+
                     <div className="flex items-center gap-4">
-                        <span className="text-xl font-bold">{orders.length} Commandes</span>
                         <button
                             onClick={toggleSound}
                             className={`p-3 rounded-full transition-colors ${soundEnabled ? 'bg-green-500 text-black' : 'bg-red-500/20 text-red-500'}`}
@@ -183,109 +216,116 @@ const KitchenDashboard = () => {
                     </div>
                 </header>
 
-                {/* Empty State */}
-                {orders.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-[60vh] text-gray-500 space-y-4">
-                        <div className="bg-white/5 p-8 rounded-full">
-                            <Flame size={64} className="text-mitake-gold opacity-50" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white">Aucune commande en cours 👨‍🍳</h2>
-                        <p>La cuisine est calme... Prêt pour le feu ! 🔥</p>
-                    </div>
-                )}
-
-                {/* Orders Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {orders.map(order => {
-                        const elapsedMins = getElapsedTime(order.created_at);
-                        const cardColorClass = getCardColor(elapsedMins);
-                        const isLate = elapsedMins >= 20;
-
-                        const items = safeJSONParse(order.items, []);
-                        const customerInfo = safeJSONParse(order.customer_info, {});
-
-                        return (
-                            <div
-                                key={order.id}
-                                onClick={() => setSelectedOrder(order)}
-                                className={`rounded-xl overflow-hidden shadow-lg flex flex-col ${cardColorClass} cursor-pointer hover:scale-[1.02] transition-transform duration-200`}
-                            >
-                                {/* Card Header */}
-                                <div className="p-4 border-b border-black/10 flex justify-between items-start">
-                                    <div>
-                                        <h3 className="text-2xl font-black">#{order.order_number ? order.order_number.slice(-4) : '????'}</h3>
-                                        <p className="text-sm font-bold opacity-80 uppercase">
-                                            {order.type === 'dine_in' ? 'Sur Place' :
-                                                order.type === 'takeaway' ? 'À Emporter' : 'Livraison'}
-                                        </p>
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                        <div className="flex items-center gap-1 font-mono font-bold text-lg">
-                                            <Clock size={18} />
-                                            {elapsedMins} min
-                                        </div>
-                                        {isLate && <AlertTriangle size={20} className="animate-bounce mt-1" />}
-                                    </div>
+                {/* Content */}
+                {activeTab === 'active' ? (
+                    <>
+                        {/* Empty State */}
+                        {orders.length === 0 && (
+                            <div className="flex flex-col items-center justify-center h-[60vh] text-gray-500 space-y-4">
+                                <div className="bg-white/5 p-8 rounded-full">
+                                    <Flame size={64} className="text-mitake-gold opacity-50" />
                                 </div>
-
-                                {/* Card Body - Items */}
-                                <div className="p-4 flex-1 overflow-y-auto max-h-[400px]">
-                                    {/* Customer Info / Notes */}
-                                    {customerInfo && customerInfo.notes && (
-                                        <div className="mb-4 p-2 bg-red-100 border-l-4 border-red-600 text-red-800 text-sm font-bold rounded">
-                                            ⚠️ NOTE: {customerInfo.notes}
-                                        </div>
-                                    )}
-
-                                    <ul className="space-y-3">
-                                        {items.length === 0 && <li className="text-sm italic opacity-50">Aucun article (Erreur de parsing ?)</li>}
-                                        {items.map((item, idx) => (
-                                            <li key={idx} className="border-b border-black/5 last:border-0 pb-2 last:pb-0">
-                                                <div className="flex justify-between items-start">
-                                                    <span className="font-bold text-lg leading-tight">
-                                                        {item.quantity}x {item.name}
-                                                    </span>
-                                                </div>
-
-                                                {/* Options */}
-                                                {item.options && item.options.length > 0 && (
-                                                    <div className="mt-1 pl-4 text-sm font-semibold opacity-80 space-y-0.5">
-                                                        {item.options.map((opt, i) => (
-                                                            <div key={i} className="flex items-center gap-1">
-                                                                <span>+ {opt.name}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-
-                                                {/* Kitchen Note per item */}
-                                                {item.comment && (
-                                                    <p className="text-red-700 font-bold text-sm mt-1 pl-4">
-                                                        📝 {item.comment}
-                                                    </p>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                {/* Card Footer - Action */}
-                                <div className="p-4 bg-black/5 mt-auto">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            markAsReady(order.id);
-                                        }}
-                                        className="w-full py-4 bg-black text-white font-bold text-xl rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 shadow-md active:scale-95 transform duration-100"
-                                    >
-                                        <CheckCircle />
-                                        TERMINE
-                                    </button>
-                                </div>
+                                <h2 className="text-2xl font-bold text-white">Aucune commande en cours 👨‍🍳</h2>
+                                <p>La cuisine est calme... Prêt pour le feu ! 🔥</p>
                             </div>
-                        );
-                    })}
-                </div>
+                        )}
+
+                        {/* Orders Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {orders.map(order => {
+                                const elapsedMins = getElapsedTime(order.created_at);
+                                const cardColorClass = getCardColor(elapsedMins);
+                                const isLate = elapsedMins >= 20;
+
+                                const items = safeJSONParse(order.items, []);
+                                const customerInfo = safeJSONParse(order.customer_info, {});
+
+                                return (
+                                    <div
+                                        key={order.id}
+                                        onClick={() => setSelectedOrder(order)}
+                                        className={`rounded-xl overflow-hidden shadow-lg flex flex-col ${cardColorClass} cursor-pointer hover:scale-[1.02] transition-transform duration-200`}
+                                    >
+                                        {/* Card Header */}
+                                        <div className="p-4 border-b border-black/10 flex justify-between items-start">
+                                            <div>
+                                                <h3 className="text-2xl font-black">#{order.order_number ? order.order_number.slice(-4) : '????'}</h3>
+                                                <p className="text-sm font-bold opacity-80 uppercase">
+                                                    {order.type === 'dine_in' ? 'Sur Place' :
+                                                        order.type === 'takeaway' ? 'À Emporter' : 'Livraison'}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-col items-end">
+                                                <div className="flex items-center gap-1 font-mono font-bold text-lg">
+                                                    <Clock size={18} />
+                                                    {elapsedMins} min
+                                                </div>
+                                                {isLate && <AlertTriangle size={20} className="animate-bounce mt-1" />}
+                                            </div>
+                                        </div>
+
+                                        {/* Card Body - Items */}
+                                        <div className="p-4 flex-1 overflow-y-auto max-h-[400px]">
+                                            {/* Customer Info / Notes */}
+                                            {customerInfo && customerInfo.notes && (
+                                                <div className="mb-4 p-2 bg-red-100 border-l-4 border-red-600 text-red-800 text-sm font-bold rounded">
+                                                    ⚠️ NOTE: {customerInfo.notes}
+                                                </div>
+                                            )}
+
+                                            <ul className="space-y-3">
+                                                {items.length === 0 && <li className="text-sm italic opacity-50">Aucun article (Erreur de parsing ?)</li>}
+                                                {items.map((item, idx) => (
+                                                    <li key={idx} className="border-b border-black/5 last:border-0 pb-2 last:pb-0">
+                                                        <div className="flex justify-between items-start">
+                                                            <span className="font-bold text-lg leading-tight">
+                                                                {item.quantity}x {item.name}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Options */}
+                                                        {item.options && item.options.length > 0 && (
+                                                            <div className="mt-1 pl-4 text-sm font-semibold opacity-80 space-y-0.5">
+                                                                {item.options.map((opt, i) => (
+                                                                    <div key={i} className="flex items-center gap-1">
+                                                                        <span>+ {opt.name}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Kitchen Note per item */}
+                                                        {item.comment && (
+                                                            <p className="text-red-700 font-bold text-sm mt-1 pl-4">
+                                                                📝 {item.comment}
+                                                            </p>
+                                                        )}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        {/* Card Footer - Action */}
+                                        <div className="p-4 bg-black/5 mt-auto">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    markAsReady(order.id);
+                                                }}
+                                                className="w-full py-4 bg-black text-white font-bold text-xl rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 shadow-md active:scale-95 transform duration-100"
+                                            >
+                                                <CheckCircle />
+                                                TERMINE
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </>
+                ) : (
+                    <OrderHistoryTable />
+                )}
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { generateOrderTicket } from '../utils/pdfTicket';
+import { calculateWaitTime, isStoreOpen } from '../utils/storeSettings';
 
 const CartContext = createContext();
 
@@ -19,6 +20,11 @@ export const CartProvider = ({ children }) => {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isOrderModeModalOpen, setIsOrderModeModalOpen] = useState(false);
 
+    // Store Logic State
+    const [waitTime, setWaitTime] = useState(15);
+    const [activeOrdersCount, setActiveOrdersCount] = useState(0);
+    const [isStoreOpenState, setIsStoreOpenState] = useState(true); // Default true to avoid flash, updated on mount
+
     // Mock Data - Restaurant State
     // In a real app, this would come from an API
     const [isDeliveryAvailable, setIsDeliveryAvailable] = useState(true);
@@ -27,8 +33,10 @@ export const CartProvider = ({ children }) => {
     // Load admin state from Supabase on mount & Subscribe to changes
     useEffect(() => {
         fetchSettings();
+        fetchActiveOrdersCount();
+        checkStoreStatus();
 
-        // Realtime Subscription
+        // Realtime Subscription for Settings
         const settingsSubscription = supabase
             .channel('public:settings')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings' }, (payload) => {
@@ -39,10 +47,47 @@ export const CartProvider = ({ children }) => {
             })
             .subscribe();
 
+        // Realtime Subscription for Orders (to update wait time)
+        const ordersSubscription = supabase
+            .channel('public:orders')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+                fetchActiveOrdersCount();
+            })
+            .subscribe();
+
+        // Check store status every minute
+        const statusInterval = setInterval(checkStoreStatus, 60000);
+
         return () => {
             supabase.removeChannel(settingsSubscription);
+            supabase.removeChannel(ordersSubscription);
+            clearInterval(statusInterval);
         };
     }, []);
+
+    // Recalculate wait time whenever cart or active orders change
+    useEffect(() => {
+        const time = calculateWaitTime(cartItems, activeOrdersCount);
+        setWaitTime(time);
+    }, [cartItems, activeOrdersCount]);
+
+    const checkStoreStatus = () => {
+        setIsStoreOpenState(isStoreOpen());
+    };
+
+    const fetchActiveOrdersCount = async () => {
+        // Count orders that are NOT ready/completed/cancelled
+        const { count, error } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .neq('status', 'ready')
+            .neq('status', 'completed')
+            .neq('status', 'cancelled');
+
+        if (!error) {
+            setActiveOrdersCount(count || 0);
+        }
+    };
 
     const fetchSettings = async () => {
         const { data, error } = await supabase
@@ -220,7 +265,10 @@ export const CartProvider = ({ children }) => {
         unavailableItems,
         setUnavailableItems, // Exposed for Admin
         updateSettings, // Exposed for Admin
-        submitOrderToPOS
+        submitOrderToPOS,
+        // New Logic
+        waitTime,
+        isStoreOpen: isStoreOpenState
     };
 
     return (

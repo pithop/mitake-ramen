@@ -1,19 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, ShoppingBag, Utensils, X, Clock, User, Phone, MessageSquare, CheckCircle } from 'lucide-react';
+import { MapPin, ShoppingBag, Utensils, X, Clock, User, Phone, MessageSquare, CheckCircle, AlertTriangle, Calendar } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { generateTimeSlots, getAvailableDates } from '../utils/storeSettings';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 const OrderModeModal = ({ isOpen, onClose }) => {
-    const { setOrderMode, setOrderDetails, isDeliveryAvailable, setIsCartOpen } = useCart();
+    const { setOrderMode, setOrderDetails, isDeliveryAvailable, setIsCartOpen, isStoreOpen } = useCart();
     const [selectedMode, setSelectedMode] = useState(null); // 'dine_in', 'takeaway', 'delivery'
+    const [availableSlots, setAvailableSlots] = useState([]);
+    const [availableDates, setAvailableDates] = useState([]);
 
     // Form states
     const [tableNumber, setTableNumber] = useState('');
+    const [pickupDate, setPickupDate] = useState(''); // YYYY-MM-DD
     const [pickupTime, setPickupTime] = useState('');
     const [address, setAddress] = useState('');
     const [customerName, setCustomerName] = useState('');
     const [phone, setPhone] = useState('');
     const [customerNotes, setCustomerNotes] = useState('');
+
+    useEffect(() => {
+        if (isOpen) {
+            // Initialize Dates
+            const dates = getAvailableDates();
+            setAvailableDates(dates);
+
+            if (dates.length > 0) {
+                const initialDate = dates[0].dateStr;
+                setPickupDate(initialDate);
+
+                // Initialize Slots for first date
+                const slots = generateTimeSlots(dates[0].value);
+                setAvailableSlots(slots);
+                if (slots.length > 0) {
+                    setPickupTime(slots[0]);
+                } else {
+                    setPickupTime('');
+                }
+            }
+        }
+    }, [isOpen]);
+
+    // Update slots when date changes
+    useEffect(() => {
+        if (pickupDate && availableDates.length > 0) {
+            const selectedDateObj = availableDates.find(d => d.dateStr === pickupDate)?.value;
+            if (selectedDateObj) {
+                const slots = generateTimeSlots(selectedDateObj);
+                setAvailableSlots(slots);
+                if (slots.length > 0) {
+                    setPickupTime(slots[0]);
+                } else {
+                    setPickupTime('');
+                }
+            }
+        }
+    }, [pickupDate, availableDates]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -25,10 +69,13 @@ const OrderModeModal = ({ isOpen, onClose }) => {
             return;
         }
 
+        // Format full pickup time string
+        const fullPickupTime = pickupDate && pickupTime ? `${format(new Date(pickupDate), 'dd/MM/yyyy')} à ${pickupTime}` : 'Immédiat';
+
         // Save details and mode
         setOrderDetails({
             tableNumber,
-            pickupTime,
+            pickupTime: fullPickupTime,
             address,
             customerName,
             phone,
@@ -70,13 +117,23 @@ const OrderModeModal = ({ isOpen, onClose }) => {
                         <h2 className="text-2xl md:text-3xl font-serif font-bold text-white mb-2 text-center">Comment souhaitez-vous commander ?</h2>
                         <p className="text-gray-400 text-center mb-6 md:mb-8">Choisissez votre mode de dégustation</p>
 
+                        {!isStoreOpen && (
+                            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 flex items-center gap-3 justify-center">
+                                <AlertTriangle />
+                                <span className="font-bold">Le restaurant est actuellement fermé. Vous pouvez pré-commander pour plus tard.</span>
+                            </div>
+                        )}
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
                             {/* Dine In */}
                             <button
-                                onClick={() => setSelectedMode('dine_in')}
-                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group ${selectedMode === 'dine_in'
-                                    ? 'bg-mitake-gold/10 border-mitake-gold text-mitake-gold'
-                                    : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'
+                                onClick={() => isStoreOpen && setSelectedMode('dine_in')}
+                                disabled={!isStoreOpen}
+                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group ${!isStoreOpen
+                                    ? 'opacity-50 cursor-not-allowed bg-white/5 border-white/5'
+                                    : selectedMode === 'dine_in'
+                                        ? 'bg-mitake-gold/10 border-mitake-gold text-mitake-gold'
+                                        : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'
                                     }`}
                             >
                                 <Utensils size={40} className={`md:w-12 md:h-12 ${selectedMode === 'dine_in' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'}`} />
@@ -167,18 +224,44 @@ const OrderModeModal = ({ isOpen, onClose }) => {
                                         </div>
                                     )}
 
-                                    {selectedMode === 'takeaway' && (
-                                        <div className="space-y-2">
-                                            <label className="text-sm text-gray-400 flex items-center gap-2">
-                                                <Clock size={16} /> Heure de retrait souhaitée
-                                            </label>
-                                            <input
-                                                type="time"
-                                                required
-                                                value={pickupTime}
-                                                onChange={(e) => setPickupTime(e.target.value)}
-                                                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-mitake-gold outline-none transition-colors"
-                                            />
+                                    {(selectedMode === 'takeaway' || selectedMode === 'delivery') && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-sm text-gray-400 flex items-center gap-2">
+                                                    <Calendar size={16} /> Date
+                                                </label>
+                                                <select
+                                                    required
+                                                    value={pickupDate}
+                                                    onChange={(e) => setPickupDate(e.target.value)}
+                                                    className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-mitake-gold outline-none transition-colors appearance-none cursor-pointer"
+                                                >
+                                                    {availableDates.map(date => (
+                                                        <option key={date.dateStr} value={date.dateStr}>{date.label}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm text-gray-400 flex items-center gap-2">
+                                                    <Clock size={16} /> Heure
+                                                </label>
+                                                {availableSlots.length > 0 ? (
+                                                    <select
+                                                        required
+                                                        value={pickupTime}
+                                                        onChange={(e) => setPickupTime(e.target.value)}
+                                                        className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-mitake-gold outline-none transition-colors appearance-none cursor-pointer"
+                                                    >
+                                                        {availableSlots.map(slot => (
+                                                            <option key={slot} value={slot}>{slot}</option>
+                                                        ))}
+                                                    </select>
+                                                ) : (
+                                                    <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
+                                                        Complet ou fermé.
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
 
@@ -225,8 +308,8 @@ const OrderModeModal = ({ isOpen, onClose }) => {
 
                                     <button
                                         type="submit"
-                                        disabled={selectedMode === 'delivery' && address.length <= 10}
-                                        className={`w-full font-bold py-3 md:py-4 rounded-lg transition-colors mt-4 ${selectedMode === 'delivery' && address.length <= 10
+                                        disabled={(selectedMode === 'delivery' && address.length <= 10) || ((selectedMode === 'takeaway' || selectedMode === 'delivery') && availableSlots.length === 0)}
+                                        className={`w-full font-bold py-3 md:py-4 rounded-lg transition-colors mt-4 ${((selectedMode === 'delivery' && address.length <= 10) || ((selectedMode === 'takeaway' || selectedMode === 'delivery') && availableSlots.length === 0))
                                             ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                                             : 'bg-mitake-gold text-black hover:bg-white'
                                             }`}

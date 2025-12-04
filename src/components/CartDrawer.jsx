@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minus, Plus, ShoppingBag, Utensils } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, Utensils, Clock } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const CartDrawer = () => {
@@ -13,7 +13,8 @@ const CartDrawer = () => {
         getCartTotal,
         submitOrderToPOS,
         orderMode,
-        setIsOrderModeModalOpen
+        setIsOrderModeModalOpen,
+        waitTime
     } = useCart();
 
     const total = getCartTotal();
@@ -139,9 +140,18 @@ const CartDrawer = () => {
                         {/* Footer */}
                         {cartItems.length > 0 && (
                             <div className="p-4 sm:p-6 border-t border-white/10 bg-black/40 space-y-3 sm:space-y-4">
-                                <div className="flex justify-between items-center text-lg sm:text-xl font-bold">
-                                    <span className="text-gray-400">Total</span>
-                                    <span className="text-white">{total.toFixed(2)} €</span>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center text-lg sm:text-xl font-bold">
+                                        <span className="text-gray-400">Total</span>
+                                        <span className="text-white">{total.toFixed(2)} €</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm text-gray-400">
+                                        <span>Temps d'attente estimé</span>
+                                        <span className="text-mitake-gold font-bold flex items-center gap-1">
+                                            <Clock size={14} />
+                                            {waitTime} min
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {orderMode && (
