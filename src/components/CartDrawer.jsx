@@ -14,6 +14,7 @@ const CartDrawer = () => {
         submitOrderToPOS,
         orderMode,
         setIsOrderModeModalOpen,
+        setIsOrderInterceptModalOpen,
         waitTime
     } = useCart();
 
@@ -23,7 +24,7 @@ const CartDrawer = () => {
         // If order mode is not selected, open the modal first
         if (!orderMode) {
             setIsCartOpen(false); // Close cart drawer
-            setIsOrderModeModalOpen(true);
+            setIsOrderInterceptModalOpen(true); // Open Intercept Modal instead of OrderModeModal
         } else {
             // Mode is already selected, submit the order
             submitOrderToPOS();

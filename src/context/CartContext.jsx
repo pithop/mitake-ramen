@@ -19,6 +19,7 @@ export const CartProvider = ({ children }) => {
     const [orderDetails, setOrderDetails] = useState({}); // { tableNumber, pickupTime, address, customerName, phone }
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isOrderModeModalOpen, setIsOrderModeModalOpen] = useState(false);
+    const [isOrderInterceptModalOpen, setIsOrderInterceptModalOpen] = useState(false);
 
     // Store Logic State
     const [waitTime, setWaitTime] = useState(15);
@@ -260,6 +261,8 @@ export const CartProvider = ({ children }) => {
         setIsCartOpen,
         isOrderModeModalOpen,
         setIsOrderModeModalOpen,
+        isOrderInterceptModalOpen,
+        setIsOrderInterceptModalOpen,
         isDeliveryAvailable,
         setIsDeliveryAvailable, // Exposed for Admin
         unavailableItems,

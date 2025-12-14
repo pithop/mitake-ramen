@@ -8,6 +8,7 @@ import SignatureCarousel from './components/SignatureCarousel';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import OrderModeModal from './components/OrderModeModal';
+import OrderInterceptModal from './components/OrderInterceptModal';
 import FloatingCartButton from './components/FloatingCartButton';
 import KitchenDashboard from './pages/KitchenDashboard';
 import ManagerDashboard from './pages/ManagerDashboard';
@@ -19,7 +20,12 @@ import StoreStatusBanner from './components/StoreStatusBanner';
 
 // Wrapper component to access context for OrderModeModal
 const AppContent = () => {
-  const { isOrderModeModalOpen, setIsOrderModeModalOpen } = useCart();
+  const {
+    isOrderModeModalOpen,
+    setIsOrderModeModalOpen,
+    isOrderInterceptModalOpen,
+    setIsOrderInterceptModalOpen
+  } = useCart();
 
   return (
     <>
@@ -28,6 +34,14 @@ const AppContent = () => {
       <OrderModeModal
         isOpen={isOrderModeModalOpen}
         onClose={() => setIsOrderModeModalOpen(false)}
+      />
+      <OrderInterceptModal
+        isOpen={isOrderInterceptModalOpen}
+        onClose={() => setIsOrderInterceptModalOpen(false)}
+        onBypass={() => {
+          setIsOrderInterceptModalOpen(false);
+          setIsOrderModeModalOpen(true);
+        }}
       />
       <CartDrawer />
       <FloatingCartButton />
