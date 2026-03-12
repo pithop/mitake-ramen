@@ -15,7 +15,8 @@ const CartDrawer = () => {
         orderMode,
         setIsOrderModeModalOpen,
         setIsOrderInterceptModalOpen,
-        waitTime
+        waitTime,
+        addToCart
     } = useCart();
 
     const total = getCartTotal();
@@ -138,41 +139,73 @@ const CartDrawer = () => {
                             )}
                         </div>
 
-                        {/* Footer */}
+                        {/* Footer & Cross-Selling */}
                         {cartItems.length > 0 && (
-                            <div className="p-4 sm:p-6 border-t border-white/10 bg-black/40 space-y-3 sm:space-y-4">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center text-lg sm:text-xl font-bold">
-                                        <span className="text-gray-400">Total</span>
-                                        <span className="text-white">{total.toFixed(2)} €</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-sm text-gray-400">
-                                        <span>Temps d'attente estimé</span>
-                                        <span className="text-mitake-gold font-bold flex items-center gap-1">
-                                            <Clock size={14} />
-                                            {waitTime} min
-                                        </span>
+                            <div className="bg-black/40 border-t border-white/10 flex flex-col">
+                                {/* Cross-Selling Section */}
+                                <div className="p-4 sm:p-5 border-b border-white/5">
+                                    <h4 className="text-xs sm:text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">Complétez votre commande</h4>
+                                    <div className="flex overflow-x-auto snap-x gap-3 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                                        {/* Mock Cross-sell items */}
+                                        {[
+                                            { id: 'mochi', name: 'Mochi Glacé', price: 4.50 },
+                                            { id: 'gyoza-side', name: 'Gyoza Poulet', price: 6.70 },
+                                            { id: 'edamame', name: 'Edamame', price: 4.00 }
+                                        ].map(item => (
+                                            <div key={item.id} className="snap-start shrink-0 w-32 bg-white/5 rounded-lg p-3 border border-white/5 hover:border-mitake-gold/30 transition-colors flex flex-col justify-between group">
+                                                <div>
+                                                    <h5 className="text-xs font-bold text-white group-hover:text-mitake-gold transition-colors">{item.name}</h5>
+                                                    <span className="text-mitake-gold text-xs">{item.price.toFixed(2)} €</span>
+                                                </div>
+                                                <button
+                                                    className="mt-2 w-full flex items-center justify-center gap-1 bg-white/10 hover:bg-mitake-gold hover:text-black transition-colors rounded py-1 text-[10px] font-bold uppercase"
+                                                    onClick={() => {
+                                                        addToCart(item);
+                                                    }}
+                                                >
+                                                    <Plus size={12} /> Ajouter
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
 
-                                {orderMode && (
-                                    <div className="text-xs sm:text-sm text-gray-500 flex justify-between">
-                                        <span>Mode:</span>
-                                        <span className="text-mitake-gold uppercase font-bold">
-                                            {orderMode === 'dine_in' ? 'Sur Place' :
-                                                orderMode === 'takeaway' ? 'À Emporter' :
-                                                    orderMode === 'delivery' ? 'Livraison' : 'Non défini'}
-                                        </span>
+                                {/* Totals & CTA */}
+                                <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center text-lg sm:text-xl font-bold">
+                                            <span className="text-gray-400">Total</span>
+                                            <span className="text-white">{total.toFixed(2)} €</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm text-gray-400">
+                                            <span>Temps d'attente estimé</span>
+                                            <span className="text-mitake-gold font-bold flex items-center gap-1">
+                                                <Clock size={14} />
+                                                {waitTime} min
+                                            </span>
+                                        </div>
                                     </div>
-                                )}
 
-                                <button
-                                    onClick={handleValidateOrder}
-                                    className="w-full bg-mitake-gold text-black font-bold py-3 sm:py-4 rounded-lg hover:bg-white transition-colors flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation"
-                                >
-                                    <Utensils size={18} className="sm:w-5 sm:h-5" />
-                                    {orderMode ? 'Envoyer la commande' : 'Valider la commande'}
-                                </button>
+                                    {orderMode && (
+                                        <div className="text-xs sm:text-sm text-gray-500 flex justify-between">
+                                            <span>Mode:</span>
+                                            <span className="text-mitake-gold uppercase font-bold">
+                                                {orderMode === 'dine_in' ? 'Sur Place' :
+                                                    orderMode === 'takeaway' ? 'À Emporter' :
+                                                        orderMode === 'delivery' ? 'Livraison' : 'Non défini'}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={handleValidateOrder}
+                                        className="w-full bg-mitake-gold text-black font-bold py-3 sm:py-4 rounded-lg hover:bg-white transition-colors flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation relative overflow-hidden group"
+                                    >
+                                        <span className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out"></span>
+                                        <Utensils size={18} className="sm:w-5 sm:h-5 relative z-10" />
+                                        <span className="relative z-10">{orderMode ? 'Envoyer la commande' : 'Valider la commande'}</span>
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </motion.div>

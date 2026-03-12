@@ -10,31 +10,31 @@ const SignatureCarousel = () => {
             title: "Curry Ebi Fried",
             price: "17,10 €",
             desc: "Crevettes panées, curry japonais authentique.",
-            image: "https://images.unsplash.com/photo-1623341214825-9f4f963727da?q=80&w=2070&auto=format&fit=crop"
+            image: "https://www.sushi-aixsud.com/550-large_default/curry-ebi-fried.jpg"
         },
         {
             title: "10 Sushi Mix",
             price: "19,40 €",
             desc: "Sélection du chef, pêche du jour.",
-            image: "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1925&auto=format&fit=crop"
+            image: "https://www.sushi-aixsud.com/530-large_default/8-sushi-mix.jpg"
         },
         {
             title: "Tonkotsu Ramen",
             price: "16,50 €",
             desc: "Bouillon porc mijoté 24h, œuf ajitsuke.",
-            image: "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?q=80&w=2070&auto=format&fit=crop"
+            image: "https://www.sushi-aixsud.com/853-large_default/ramen-tonkotsu-classic.jpg"
         },
         {
             title: "Chirashi Deluxe",
             price: "26,30 €",
             desc: "L'excellence du poisson cru sur riz vinaigré.",
-            image: chirashiImage
+            image: "https://www.sushi-aixsud.com/93-large_default/chirashi-deluxe.jpg"
         },
         {
             title: "Gyoza Maison",
             price: "8,50 €",
             desc: "Raviolis grillés, farce porc et légumes.",
-            image: gyozaImage
+            image: "https://www.sushi-aixsud.com/111-large_default/gyoza-par-6-poulet-crevettes-legumes.jpg"
         }
     ];
 
@@ -62,11 +62,11 @@ const SignatureCarousel = () => {
                         transition={{ duration: 0.6, delay: index * 0.1 }}
                         className="relative flex-shrink-0 w-[300px] h-[400px] rounded-sm overflow-hidden group snap-center cursor-pointer border border-white/5 hover:border-mitake-gold/30 transition-colors"
                     >
-                        {/* Image */}
+                        {/* Image avec Ken Burns effect (100% -> 105% sur 500ms) */}
                         <img
                             src={item.image}
                             alt={`${item.title} - ${item.desc}`}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            className="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-500 ease-out"
                         />
 
                         {/* Gradient Overlay */}

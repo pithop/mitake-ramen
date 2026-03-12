@@ -40,7 +40,7 @@ const Footer = () => {
                         <h4 className="text-lg font-serif font-bold text-mitake-gold">Nous Trouver</h4>
                         <div className="space-y-2 md:space-y-4 text-sm text-gray-400 font-light">
                             <p>569 Avenue Henri Mauriat<br />13100 Aix-en-Provence</p>
-                            <p>09 72 21 38 99<br />contact@mitake-ramen.com</p>
+                            <p>09 72 21 38 99</p>
                         </div>
                     </div>
 

@@ -85,12 +85,12 @@ const MenuSection = () => {
                             className="flex flex-col lg:flex-row"
                         >
                             {/* Sticky Image Left */}
-                            <div className="w-full lg:w-1/2 h-[30vh] md:h-[40vh] lg:h-auto lg:min-h-[60vh] lg:sticky lg:top-32 overflow-hidden self-start z-0">
-                                <div className="relative w-full h-full min-h-[30vh]">
+                            <div className="w-full lg:w-1/2 h-[30vh] md:h-[40vh] lg:h-auto lg:min-h-[60vh] lg:sticky lg:top-32 overflow-hidden self-start z-0 group">
+                                <div className="relative w-full h-full min-h-[30vh] overflow-hidden">
                                     <img
                                         src={ramenChashuImage}
                                         alt="Bol de Ramen Tonkotsu Chashu signature"
-                                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[20s]"
+                                        className="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-mitake-black pointer-events-none"></div>
                                 </div>
@@ -122,12 +122,24 @@ const MenuSection = () => {
                                                         transition={{ duration: 0.4, ease: "easeInOut" }}
                                                         className="overflow-hidden"
                                                     >
-                                                        <div className="space-y-4 py-4 md:py-6">
+                                                        <motion.div
+                                                            className="space-y-4 py-4 md:py-6"
+                                                            variants={{
+                                                                hidden: { opacity: 0 },
+                                                                show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+                                                            }}
+                                                            initial="hidden"
+                                                            animate="show"
+                                                        >
                                                             {category.items.map((item, i) => {
                                                                 const isUnavailable = unavailableItems.includes(item.name);
 
                                                                 return (
-                                                                    <div
+                                                                    <motion.div
+                                                                        variants={{
+                                                                            hidden: { opacity: 0, y: 20 },
+                                                                            show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+                                                                        }}
                                                                         key={i}
                                                                         className={`group/item relative p-4 md:p-5 rounded-lg border transition-all duration-300 ${isUnavailable
                                                                             ? 'bg-black/20 border-white/5 opacity-60'
@@ -171,10 +183,10 @@ const MenuSection = () => {
                                                                                 )}
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </motion.div>
                                                                 );
                                                             })}
-                                                        </div>
+                                                        </motion.div>
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
@@ -218,12 +230,24 @@ const MenuSection = () => {
                                                         transition={{ duration: 0.4, ease: "easeInOut" }}
                                                         className="overflow-hidden"
                                                     >
-                                                        <div className="space-y-4 py-4 md:py-6">
+                                                        <motion.div
+                                                            className="space-y-4 py-4 md:py-6"
+                                                            variants={{
+                                                                hidden: { opacity: 0 },
+                                                                show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+                                                            }}
+                                                            initial="hidden"
+                                                            animate="show"
+                                                        >
                                                             {category.items.map((item, i) => {
                                                                 const isUnavailable = unavailableItems.includes(item.name);
 
                                                                 return (
-                                                                    <div
+                                                                    <motion.div
+                                                                        variants={{
+                                                                            hidden: { opacity: 0, y: 20 },
+                                                                            show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+                                                                        }}
                                                                         key={i}
                                                                         className={`group/item relative p-4 md:p-5 rounded-lg border transition-all duration-300 ${isUnavailable
                                                                             ? 'bg-black/20 border-white/5 opacity-60'
@@ -267,10 +291,10 @@ const MenuSection = () => {
                                                                                 )}
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </motion.div>
                                                                 );
                                                             })}
-                                                        </div>
+                                                        </motion.div>
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
@@ -280,12 +304,12 @@ const MenuSection = () => {
                             </div>
 
                             {/* Sticky Image Right */}
-                            <div className="w-full lg:w-1/2 h-[30vh] md:h-[40vh] lg:h-auto lg:min-h-[60vh] lg:sticky lg:top-32 overflow-hidden self-start z-0">
-                                <div className="relative w-full h-full min-h-[30vh]">
+                            <div className="w-full lg:w-1/2 h-[30vh] md:h-[40vh] lg:h-auto lg:min-h-[60vh] lg:sticky lg:top-32 overflow-hidden self-start z-0 group">
+                                <div className="relative w-full h-full min-h-[30vh] overflow-hidden">
                                     <img
                                         src={sushiImage}
                                         alt="Assortiment de Sushis et Makis"
-                                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[20s]"
+                                        className="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-transparent to-transparent lg:bg-gradient-to-l lg:from-transparent lg:to-mitake-black pointer-events-none"></div>
                                 </div>

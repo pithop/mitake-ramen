@@ -21,6 +21,10 @@ export const CartProvider = ({ children }) => {
     const [isOrderModeModalOpen, setIsOrderModeModalOpen] = useState(false);
     const [isOrderInterceptModalOpen, setIsOrderInterceptModalOpen] = useState(false);
 
+    // Animation States
+    const [flyingDots, setFlyingDots] = useState([]);
+    const [cartBump, setCartBump] = useState(0);
+
     // Store Logic State
     const [waitTime, setWaitTime] = useState(15);
     const [activeOrdersCount, setActiveOrdersCount] = useState(0);
@@ -125,7 +129,17 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    const addToCart = (item, quantity = 1, options = []) => {
+    const triggerFlyingDot = (startX, startY) => {
+        const id = Date.now() + Math.random();
+        setFlyingDots(prev => [...prev, { id, startX, startY }]);
+        // Remove the dot and trigger bump after animation (800ms)
+        setTimeout(() => {
+            setFlyingDots(prev => prev.filter(dot => dot.id !== id));
+            setCartBump(prev => prev + 1);
+        }, 800);
+    };
+
+    const addToCart = (item, quantity = 1, options = [], event = null) => {
         // Check stock
         if (unavailableItems.includes(item.name)) {
             alert("Désolé, cet article est en rupture de stock.");
@@ -153,7 +167,12 @@ export const CartProvider = ({ children }) => {
                 }];
             }
         });
-        setIsCartOpen(true);
+
+        if (event && event.clientX && event.clientY) {
+            triggerFlyingDot(event.clientX, event.clientY);
+        } else {
+            setIsCartOpen(true);
+        }
     };
 
     const removeFromCart = (itemCartId) => {
@@ -271,7 +290,11 @@ export const CartProvider = ({ children }) => {
         submitOrderToPOS,
         // New Logic
         waitTime,
-        isStoreOpen: isStoreOpenState
+        isStoreOpen: isStoreOpenState,
+        // Animations
+        flyingDots,
+        cartBump,
+        triggerFlyingDot
     };
 
     return (

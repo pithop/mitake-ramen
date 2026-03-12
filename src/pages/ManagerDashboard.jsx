@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useCart } from '../context/CartContext';
 import { MENU_DATA } from '../data/menu';
-import { Save, Power, Search, Loader2, TrendingUp, DollarSign, Calendar } from 'lucide-react';
+import { Save, Power, Search, Loader2, TrendingUp, DollarSign, Calendar, Clock, AlertTriangle } from 'lucide-react';
 import AdminLogin from '../components/AdminLogin';
 import AdminNavbar from '../components/AdminNavbar';
 import { useAdminAuth } from '../hooks/useAdminAuth';
@@ -38,6 +38,29 @@ const ManagerDashboard = () => {
     useEffect(() => {
         if (isAuthenticated) {
             fetchOrders();
+
+            // Realtime subscription
+            const channel = supabase
+                .channel('manager-orders')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'orders' },
+                    () => {
+                        console.log('Orders changed, refetching for manager...');
+                        fetchOrders();
+                    }
+                )
+                .subscribe();
+
+            // Timer for updating "time ago" every minute
+            const timerInterval = setInterval(() => {
+                setOrders(prev => [...prev]); // Force re-render for elapsed time
+            }, 60000);
+
+            return () => {
+                supabase.removeChannel(channel);
+                clearInterval(timerInterval);
+            };
         }
     }, [isAuthenticated]);
 
@@ -197,6 +220,83 @@ const ManagerDashboard = () => {
                     <Suspense fallback={<div className="h-64 w-full flex items-center justify-center text-gray-500">Chargement du graphique...</div>}>
                         <RevenueChart data={kpis.chartData} />
                     </Suspense>
+                </section>
+
+                {/* Active Orders Section */}
+                <section className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                        <Clock size={20} className="text-mitake-gold" />
+                        Commandes en cours (Suivi des retards)
+                    </h2>
+
+                    {(() => {
+                        const activeOrders = orders.filter(o => !['completed', 'cancelled'].includes(o.status));
+
+                        if (activeOrders.length === 0) {
+                            return <p className="text-gray-400">Aucune commande en cours.</p>;
+                        }
+
+                        return (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse min-w-[600px]">
+                                    <thead>
+                                        <tr className="border-b border-white/10 text-gray-400 text-sm">
+                                            <th className="pb-3 pl-2">N° Commande</th>
+                                            <th className="pb-3">Type</th>
+                                            <th className="pb-3">Statut</th>
+                                            <th className="pb-3">Temps écoulé</th>
+                                            <th className="pb-3 text-right pr-2">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {activeOrders.map(order => {
+                                            const elapsedMins = Math.floor((new Date() - new Date(order.created_at)) / 60000);
+                                            const isDelayed = elapsedMins >= 15 && order.status !== 'ready';
+
+                                            // Format status
+                                            const statusMap = {
+                                                'pending': 'Reçue',
+                                                'pending_print': 'À Imprimer',
+                                                'preparing': 'En Cuisine',
+                                                'ready': 'Prête'
+                                            };
+                                            const statusLabel = statusMap[order.status] || order.status;
+
+                                            return (
+                                                <tr key={order.id} className={`border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors ${isDelayed ? 'bg-red-500/5' : ''}`}>
+                                                    <td className="py-4 pl-2 font-mono font-bold">#{order.order_number?.slice(-4) || '????'}</td>
+                                                    <td className="py-4 uppercase text-xs font-bold text-gray-300">
+                                                        {order.type === 'dine_in' ? 'Sur Place' : order.type === 'takeaway' ? 'À Emporter' : 'Livraison'}
+                                                    </td>
+                                                    <td className="py-4">
+                                                        <span className={`px-3 py-1 text-xs font-bold rounded-full ${order.status === 'ready' ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-gray-300'}`}>
+                                                            {statusLabel}
+                                                        </span>
+                                                    </td>
+                                                    <td className="py-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <span className={`font-mono font-bold ${isDelayed ? 'text-red-400' : 'text-white'}`}>
+                                                                {elapsedMins} min
+                                                            </span>
+                                                            {isDelayed && (
+                                                                <span className="flex h-3 w-3 relative" title="Retard détecté (>15 min)">
+                                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-4 text-right pr-2 text-mitake-gold font-bold">
+                                                        {(parseFloat(order.total_price) || 0).toFixed(2)}€
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        );
+                    })()}
                 </section>
 
                 {/* Master Switch - Delivery */}

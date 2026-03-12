@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Flame, Settings, Truck, LogOut, WifiOff } from 'lucide-react';
+import { Flame, Settings, Truck, LogOut, WifiOff, Monitor } from 'lucide-react';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
 const AdminNavbar = () => {
@@ -77,6 +77,16 @@ const AdminNavbar = () => {
                             <Truck size={18} />
                             <span className="hidden sm:inline">Livreurs</span>
                         </Link>
+
+                        <a
+                            href="https://posmitake.vercel.app/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors text-gray-400 hover:text-white hover:bg-white/5"
+                        >
+                            <Monitor size={18} />
+                            <span className="hidden sm:inline">Caisse POS</span>
+                        </a>
                     </div>
                 </div>
 

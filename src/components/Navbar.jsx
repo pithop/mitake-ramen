@@ -6,7 +6,16 @@ import { useCart } from '../context/CartContext';
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { cartItems, setIsCartOpen } = useCart();
+    const { cartItems, setIsCartOpen, cartBump } = useCart();
+    const [bumpScale, setBumpScale] = useState(1);
+
+    useEffect(() => {
+        if (cartBump > 0) {
+            setBumpScale(1.2);
+            const timer = setTimeout(() => setBumpScale(1), 300);
+            return () => clearTimeout(timer);
+        }
+    }, [cartBump]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -51,7 +60,9 @@ const Navbar = () => {
                 {/* CTA & Mobile Toggle */}
                 <div className="flex items-center space-x-4">
                     {/* Cart Icon with Badge */}
-                    <button
+                    <motion.button
+                        id="navbar-cart-btn"
+                        animate={{ scale: bumpScale }}
                         onClick={() => setIsCartOpen(true)}
                         className="relative hidden md:flex items-center space-x-2 bg-mitake-dark text-white px-4 py-2 rounded-full hover:bg-mitake-terracotta transition-colors duration-300"
                     >
@@ -61,10 +72,12 @@ const Navbar = () => {
                                 {cartItems.reduce((total, item) => total + item.quantity, 0)}
                             </span>
                         )}
-                    </button>
+                    </motion.button>
 
                     {/* Mobile Cart Icon */}
-                    <button
+                    <motion.button
+                        id="navbar-cart-mobile"
+                        animate={{ scale: bumpScale }}
                         onClick={() => setIsCartOpen(true)}
                         className="relative md:hidden text-mitake-dark"
                     >
@@ -74,7 +87,7 @@ const Navbar = () => {
                                 {cartItems.reduce((total, item) => total + item.quantity, 0)}
                             </span>
                         )}
-                    </button>
+                    </motion.button>
 
                     <button
                         className="md:hidden text-mitake-dark"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastProvider } from './context/ToastContext';
 import { CartProvider, useCart } from './context/CartContext';
 import Hero from './components/Hero';
 import PhilosophySection from './components/PhilosophySection';
@@ -10,6 +11,7 @@ import CartDrawer from './components/CartDrawer';
 import OrderModeModal from './components/OrderModeModal';
 import OrderInterceptModal from './components/OrderInterceptModal';
 import FloatingCartButton from './components/FloatingCartButton';
+import FlyingDotsOverlay from './components/FlyingDotsOverlay';
 import KitchenDashboard from './pages/KitchenDashboard';
 import ManagerDashboard from './pages/ManagerDashboard';
 import DeliveryDashboard from './pages/DeliveryDashboard';
@@ -43,6 +45,7 @@ const AppContent = () => {
           setIsOrderModeModalOpen(true);
         }}
       />
+      <FlyingDotsOverlay />
       <CartDrawer />
       <FloatingCartButton />
 
@@ -66,8 +69,6 @@ const AppContent = () => {
     </>
   );
 };
-
-import { ToastProvider } from './context/ToastContext';
 
 function App() {
   return (

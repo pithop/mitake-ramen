@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, AlertCircle, Flame, Leaf, Star, Anchor } from 'lucide-react';
+import { Plus, AlertCircle, Flame, Leaf, Star, Anchor, Crown } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import ProductCustomizationModal from './ProductCustomizationModal';
 
@@ -16,21 +16,31 @@ const MenuCard = ({ item }) => {
         if (item.availableOptions && item.availableOptions.length > 0) {
             setIsModalOpen(true);
         } else {
-            addToCart(item);
+            addToCart(item, 1, [], e);
         }
     };
 
-    const handleModalConfirm = (product, quantity, options) => {
-        addToCart(product, quantity, options);
+    const handleModalConfirm = (product, quantity, options, e) => {
+        addToCart(product, quantity, options, e);
     };
 
-    const getTagIcon = (tag) => {
+    const getTagIconAndStyle = (tag) => {
         switch (tag) {
-            case 'spicy': return <Flame size={14} className="text-red-500" />;
-            case 'veggie': return <Leaf size={14} className="text-green-500" />;
-            case 'popular': return <Star size={14} className="text-yellow-500" />;
-            case 'seafood': return <Anchor size={14} className="text-blue-400" />;
-            default: return null;
+            case 'spicy':
+                return { icon: <Flame size={12} className="text-white" />, style: "bg-gradient-to-br from-red-500 to-orange-600", label: "Épicé" };
+            case 'veggie':
+            case 'healthy':
+                return { icon: <Leaf size={12} className="text-white" />, style: "bg-gradient-to-br from-green-500 to-emerald-700", label: "Végétarien" };
+            case 'chef_choice':
+            case 'premium':
+            case 'signature':
+                return { icon: <Crown size={12} className="text-black" />, style: "bg-gradient-to-br from-yellow-300 to-amber-500", label: "Signature" };
+            case 'popular':
+                return { icon: <Star size={12} className="text-black" />, style: "bg-gradient-to-br from-mitake-gold to-yellow-600", label: "Populaire" };
+            case 'seafood':
+                return { icon: <Anchor size={12} className="text-white" />, style: "bg-gradient-to-br from-blue-400 to-cyan-600", label: "Mer" };
+            default:
+                return null;
         }
     };
 
@@ -41,26 +51,40 @@ const MenuCard = ({ item }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className={`bg-black/50 p-6 rounded-sm border transition-all duration-300 flex flex-col justify-between h-full group backdrop-blur-sm relative overflow-hidden ${isUnavailable
-                    ? 'border-white/5 opacity-60 grayscale'
-                    : 'border-white/10 hover:border-mitake-gold/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.15)]'
+                className={`p-6 rounded-xl border transition-all duration-500 flex flex-col justify-between h-full group backdrop-blur-md relative overflow-hidden ${isUnavailable
+                    ? 'bg-black/20 border-white/5 opacity-60 grayscale'
+                    : 'bg-black/40 border-white/10 hover:border-mitake-gold/40 hover:bg-black/60 hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:-translate-y-1'
                     }`}
             >
-                <div>
+                {/* Effet reflet subtil (Glassmorphism) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+                <div className="relative z-10">
                     <div className="flex justify-between items-start mb-3">
-                        <div className="flex flex-col gap-1">
-                            <h3 className={`font-serif font-bold text-lg transition-colors ${isUnavailable ? 'text-gray-500' : 'text-white group-hover:text-mitake-gold'
+                        <div className="flex flex-col gap-2">
+                            <h3 className={`font-serif font-bold text-lg md:text-xl transition-colors ${isUnavailable ? 'text-gray-500' : 'text-white group-hover:text-mitake-gold'
                                 }`}>
                                 {item.name}
                             </h3>
-                            {/* Tags */}
+                            {/* Tags avec Badges Visuels Améliorés */}
                             {item.tags && (
-                                <div className="flex gap-2">
-                                    {item.tags.map(tag => (
-                                        <span key={tag} title={tag} className="bg-white/5 p-1 rounded-full">
-                                            {getTagIcon(tag)}
-                                        </span>
-                                    ))}
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                    {item.tags.map(tag => {
+                                        const tagData = getTagIconAndStyle(tag);
+                                        if (!tagData) return null;
+                                        return (
+                                            <span
+                                                key={tag}
+                                                title={tagData.label}
+                                                className={`flex items-center gap-1 ${tagData.style} px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm`}
+                                            >
+                                                {tagData.icon}
+                                                <span className={tagData.style.includes('text-black') ? 'text-black' : 'text-white'}>
+                                                    {tagData.label}
+                                                </span>
+                                            </span>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

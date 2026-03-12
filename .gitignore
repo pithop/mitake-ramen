@@ -54,3 +54,5 @@ coverage
 
 # Debug
 *.tsbuildinfo
+pos_products_rows.json
+task.md.resolved

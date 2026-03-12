@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const FloatingCartButton = () => {
-    const { cartItems, setIsCartOpen, isCartOpen } = useCart();
+    const { cartItems, setIsCartOpen, isCartOpen, cartBump } = useCart();
     const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+    const [bumpScale, setBumpScale] = useState(1);
+
+    useEffect(() => {
+        if (cartBump > 0) {
+            setBumpScale(1.2);
+            const timer = setTimeout(() => setBumpScale(1), 300);
+            return () => clearTimeout(timer);
+        }
+    }, [cartBump]);
 
     // Hide the button when cart drawer is open
     if (isCartOpen) return null;
@@ -14,8 +24,9 @@ const FloatingCartButton = () => {
         <AnimatePresence>
             {totalItems > 0 && (
                 <motion.button
+                    id="floating-cart-btn"
                     initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
+                    animate={{ scale: bumpScale, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
