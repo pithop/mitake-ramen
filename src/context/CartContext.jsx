@@ -248,10 +248,11 @@ export const CartProvider = ({ children }) => {
                 id: crypto.randomUUID(),
                 order_id: orderId,
                 product_id: item.id || item.name.toLowerCase().replace(/\s+/g, '_'), // Fallback if no explicit ID
+                product_name: item.posName || item.name,
                 quantity: item.quantity,
-                price_at_time: item.price + optionsPrice,
-                modifiers_json: item.selectedOptions || [],
-                note: item.kitchen_note || ""
+                unit_price: item.price + optionsPrice,
+                total_price: (item.price + optionsPrice) * item.quantity,
+                selected_modifiers: item.selectedOptions || []
             };
         });
 
