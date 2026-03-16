@@ -5,11 +5,11 @@ export const MENU_DATA = [
         description: "Nouilles de blé dans un bouillon Tonkotsu traditionnel de l'île de Kyushu.",
         items: [
             {
-                id: "tonkotsu-classic",
-                name: "Ramen Tonkotsu Classic",
-                price: 14.70,
+                id: "ramen-tonkotsu-classic",
+                name: "Ramen tonkotsu classic",
+                price: 14.00,
                 description: "Bouillon porc mijoté, 3 tranches de Chashu, germes de soja, cébettes.",
-                image: "/assets/ramen-classic.jpg",
+                image: "https://www.sushi-aixsud.com/853-large_default/ramen-tonkotsu-classic.jpg",
                 tags: ["popular"],
                 availableOptions: [
                     { name: "Supplément Oeuf Mollet", price: 1.5 },
@@ -19,10 +19,11 @@ export const MENU_DATA = [
                 ]
             },
             {
-                id: "tonkotsu-chashu",
-                name: "Ramen Tonkotsu Chashu",
-                price: 16.30,
+                id: "ramen-tonkotsu-chashu",
+                name: "Ramen tonkotsu cha-shu",
+                price: 15.50,
                 description: "La version gourmande : 5 tranches de Chashu, œuf mollet mariné, bouillon riche.",
+                image: "https://www.sushi-aixsud.com/852-large_default/ramen-tonkotsu-cha-shu.jpg",
                 tags: ["chef_choice", "meat_lover"],
                 availableOptions: [
                     { name: "Supplément Oeuf Mollet", price: 1.5 },
@@ -32,9 +33,10 @@ export const MENU_DATA = [
             },
             {
                 id: "maze-men",
-                name: "Mazé Men (Sans Bouillon)",
-                price: 15.80,
+                name: "Mazé men (ramen sans bouillon)",
+                price: 15.00,
                 description: "Ramen sèches, émincés de poulet mijotés, œuf mollet, oignons frits.",
+                image: "https://www.sushi-aixsud.com/854-large_default/maze-men-ramen-sans-bouillon.jpg",
                 tags: ["original", "spicy"],
                 availableOptions: [
                     { name: "Supplément Poulet", price: 2.5 },
@@ -50,9 +52,10 @@ export const MENU_DATA = [
         items: [
             {
                 id: "gyoza-poulet",
-                name: "Gyoza Poulet & Légumes",
-                price: 6.70,
+                name: "Gyoza poulet - legumes",
+                price: 6.37,
                 description: "6 Raviolis grillés maison. Farce juteuse et pâte croustillante.",
+                image: "https://www.sushi-aixsud.com/226-large_default/gyoza-poulet-legumes.jpg",
                 qty_label: "6 pièces",
                 tags: ["popular"],
                 availableOptions: [
@@ -61,23 +64,26 @@ export const MENU_DATA = [
             },
             {
                 id: "ebi-fried",
-                name: "Ebi Fried",
-                price: 10.90,
+                name: "EBI FRIED",
+                price: 10.40,
                 description: "5 Grosses crevettes panées Panko, sauce tartare japonaise.",
+                image: "https://www.sushi-aixsud.com/112-large_default/ebi-fried.jpg",
                 tags: ["seafood"]
             },
             {
                 id: "karaage",
-                name: "Karaage Maison",
-                price: 10.90,
+                name: "KARA AGE",
+                price: 10.36,
                 description: "7 morceaux de poulet mariné au gingembre et soja, frit croustillant.",
+                image: "https://www.sushi-aixsud.com/127-large_default/karaage.jpg",
                 tags: ["popular"]
             },
             {
                 id: "takoyaki",
-                name: "Takoyaki",
-                price: 8.30,
+                name: "TAKOYAKI Classique",
+                price: 7.98,
                 description: "6 Boulettes de poulpe fondantes, sauce brune et mayonnaise.",
+                image: "https://www.sushi-aixsud.com/103-large_default/takoyaki.jpg",
                 tags: ["original"]
             }
         ]
@@ -89,8 +95,9 @@ export const MENU_DATA = [
             {
                 id: "katsu-curry",
                 name: "Curry Torikatsu",
-                price: 16.20,
+                price: 15.39,
                 description: "Filet de poulet pané croustillant sur riz Bio, nappé de curry japonais doux.",
+                image: "https://www.sushi-aixsud.com/549-large_default/curry-torikatsu.jpg",
                 tags: ["spicy"],
                 availableOptions: [
                     { name: "Extra Riz", price: 2.0 },
@@ -99,16 +106,18 @@ export const MENU_DATA = [
             },
             {
                 id: "saumon-teriyaki",
-                name: "Saumon Teriyaki",
-                price: 18.90,
+                name: "SAUMON TERIYAKI",
+                price: 17.96,
                 description: "Pavé de saumon Label Rouge laqué sauce soja sucrée, légumes et riz Bio.",
+                image: "https://www.sushi-aixsud.com/124-large_default/saumon-teriyaki.jpg",
                 tags: ["healthy", "seafood"]
             },
             {
                 id: "una-chirashi",
-                name: "Una Chirashi (Anguille)",
-                price: 18.40,
+                name: "CHIRASHI ANGUILLE",
+                price: 20.43,
                 description: "Bol de riz Bio recouvert de tranches d'anguille grillée caramélisée (Unagi).",
+                image: "https://www.sushi-aixsud.com/259-large_default/una-chirashi.jpg",
                 tags: ["premium", "seafood"]
             }
         ]

@@ -88,8 +88,8 @@ const MenuSection = () => {
                             <div className="w-full lg:w-1/2 h-[30vh] md:h-[40vh] lg:h-auto lg:min-h-[60vh] lg:sticky lg:top-32 overflow-hidden self-start z-0 group">
                                 <div className="relative w-full h-full min-h-[30vh] overflow-hidden">
                                     <img
-                                        src={ramenChashuImage}
-                                        alt="Bol de Ramen Tonkotsu Chashu signature"
+                                        src="https://www.sushi-aixsud.com/853-large_default/ramen-tonkotsu-classic.jpg"
+                                        alt="Bol de Ramen Tonkotsu Classic"
                                         className="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-mitake-black pointer-events-none"></div>

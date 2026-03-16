@@ -56,3 +56,6 @@ coverage
 *.tsbuildinfo
 pos_products_rows.json
 task.md.resolved
+pos_products_rows (1).csv
+TECHNICAL_DOCUMENTATION_pos.md
+technical_documentation.md

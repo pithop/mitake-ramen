@@ -43,19 +43,19 @@ export const CartProvider = ({ children }) => {
 
         // Realtime Subscription for Settings
         const settingsSubscription = supabase
-            .channel('public:settings')
-            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings' }, (payload) => {
-                console.log('🔄 Realtime Update:', payload);
-                const { is_delivery_available, unavailable_items } = payload.new;
-                setIsDeliveryAvailable(is_delivery_available);
-                setUnavailableItems(unavailable_items || []);
+            .channel('public:pos_products')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pos_products' }, (payload) => {
+                console.log('🔄 Realtime Product Update:', payload);
+                // We re-fetch all settings to ensure we get the full list of unavailable items correctly.
+                // Could also optimize by just updating the local array based on the single payload.
+                fetchSettings();
             })
             .subscribe();
 
         // Realtime Subscription for Orders (to update wait time)
         const ordersSubscription = supabase
-            .channel('public:orders')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+            .channel('public:pos_orders')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pos_orders' }, () => {
                 fetchActiveOrdersCount();
             })
             .subscribe();
@@ -83,7 +83,7 @@ export const CartProvider = ({ children }) => {
     const fetchActiveOrdersCount = async () => {
         // Count orders that are NOT ready/completed/cancelled
         const { count, error } = await supabase
-            .from('orders')
+            .from('pos_orders')
             .select('*', { count: 'exact', head: true })
             .neq('status', 'ready')
             .neq('status', 'completed')
@@ -95,17 +95,26 @@ export const CartProvider = ({ children }) => {
     };
 
     const fetchSettings = async () => {
-        const { data, error } = await supabase
-            .from('settings')
-            .select('*')
-            .single();
+        // Fetch out-of-stock items dynamically from pos_products
+        try {
+            const { data: outOfStockProducts, error: productsError } = await supabase
+                .from('pos_products')
+                .select('name') // Or 'id', but MenuCard relies on name currently
+                .eq('available', false);
 
-        if (error) {
-            console.error('Error fetching settings:', error);
-            // Fallback to defaults if table is empty or error
-        } else if (data) {
-            setIsDeliveryAvailable(data.is_delivery_available);
-            setUnavailableItems(data.unavailable_items || []);
+            if (productsError) {
+                console.error('Error fetching out of stock products:', productsError);
+            } else if (outOfStockProducts) {
+                const outOfStockNames = outOfStockProducts.map(p => p.name);
+                setUnavailableItems(outOfStockNames);
+            }
+
+            // In a real POS integration, Delivery Availability might come from another table or stay in 'settings'
+            // For now, we will leave it as true by default, or you can fetch it if still needed.
+            setIsDeliveryAvailable(true);
+
+        } catch (err) {
+            console.error('Unexpected error in fetchSettings:', err);
         }
     };
 
@@ -204,56 +213,87 @@ export const CartProvider = ({ children }) => {
 
     const submitOrderToPOS = async () => {
         const total = getCartTotal();
+        const orderId = crypto.randomUUID();
 
-        // STRICT JSON MAPPING FOR PYTHON SCRIPT
-        const orderData = {
-            order_number: `CMD-${Date.now()}`, // ID unique
-            status: 'pending_print',           // OBLIGATOIRE pour déclencher l'imprimante
-            type: orderMode,                   // 'dine_in' | 'takeaway' | 'delivery'
-            total_price: total,
-            customer_info: {
-                name: orderDetails.customerName || "Client Web",
-                phone: orderDetails.phone || "0600000000",
-                address: orderMode === 'delivery' ? orderDetails.address : null,
-                notes: orderDetails.notes || ""  // NOUVEAU: Notes client
-            },
-
-            // LE PLUS IMPORTANT : MAPPING DES ITEMS
-            items: cartItems.map(item => {
+        // 1. PREPARE pos_orders PAYLOAD
+        const posOrderData = {
+            id: orderId,
+            total: total,
+            status: 'pending', // CRITIQUE : "pending" signifie que la caisse doit l'encaisser/valider
+            order_type: orderMode, // 'dine_in' | 'takeaway' | 'delivery'
+            source_device: 'website',
+            customer_name: orderDetails.customerName || "Client Web",
+            pickup_time: orderDetails.pickupTime || new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+            items_json: cartItems.map(item => {
                 const optionsPrice = item.selectedOptions ? item.selectedOptions.reduce((acc, opt) => acc + opt.price, 0) : 0;
                 return {
                     name: item.name,
                     quantity: item.quantity,
-                    price: item.price + optionsPrice, // Unit price including options
+                    price: item.price + optionsPrice,
                     options: item.selectedOptions || [],
                     comment: item.kitchen_note || ""
                 };
-            })
+            }),
+            payment_method: 'unpaid',
+            payment_details: []
         };
 
-        console.log("📤 Tentative d'envoi de la commande...");
-        console.log("🔧 Supabase URL:", import.meta.env.VITE_APP_SUPABASE_URL);
-        console.log("🔵 Payload à envoyer:", orderData);
+        // 2. PREPARE pos_order_items PAYLOAD
+        const posOrderItemsData = cartItems.map(item => {
+            const optionsPrice = item.selectedOptions ? item.selectedOptions.reduce((acc, opt) => acc + opt.price, 0) : 0;
+            return {
+                id: crypto.randomUUID(),
+                order_id: orderId,
+                product_id: item.id || item.name.toLowerCase().replace(/\s+/g, '_'), // Fallback if no explicit ID
+                quantity: item.quantity,
+                price_at_time: item.price + optionsPrice,
+                modifiers_json: item.selectedOptions || [],
+                note: item.kitchen_note || ""
+            };
+        });
+
+        console.log("📤 Tentative d'envoi de la commande au POS...");
+        console.log("🔵 Payload pos_orders:", posOrderData);
+        console.log("🔵 Payload pos_order_items:", posOrderItemsData);
 
         try {
-            const { data, error } = await supabase.from('orders').insert([orderData]);
+            // STEP 1: Insert into pos_orders
+            const { error: orderError } = await supabase.from('pos_orders').insert([posOrderData]);
 
-            if (error) {
-                console.error("❌ Erreur Supabase:", error);
-                console.error("❌ Message:", error.message);
-                console.error("❌ Details:", error.details);
-                console.error("❌ Hint:", error.hint);
-                console.error("❌ Code:", error.code);
-                alert(`Erreur Supabase: ${error.message}`);
+            if (orderError) {
+                console.error("❌ Erreur Supabase (pos_orders):", orderError);
+                alert(`Erreur création commande: ${orderError.message}`);
                 return;
             }
 
-            console.log("✅ ORDER SENT TO SUPABASE:", orderData);
-            console.log("✅ Response data:", data);
+            // STEP 2: Insert into pos_order_items
+            if (posOrderItemsData.length > 0) {
+                const { error: itemsError } = await supabase.from('pos_order_items').insert(posOrderItemsData);
+
+                if (itemsError) {
+                    console.error("❌ Erreur Supabase (pos_order_items):", itemsError);
+                    alert(`Erreur création lignes de commande: ${itemsError.message}`);
+                    return;
+                }
+            }
+
+            console.log("✅ COMMANDES ENREGISTRÉES AVEC SUCCÈS DANS LE POS !");
 
             // Generate and download PDF ticket
             console.log("📄 Génération du ticket PDF...");
-            generateOrderTicket(orderData, orderDetails, cartItems, total);
+            // Remapping posOrderData back to the old format temporarily to not break pdfTicket.js logic
+            const legacyOrderData = {
+                order_number: posOrderData.id.split('-')[0].toUpperCase(), // Just a short string for the ticket
+                status: 'pending_print',
+                type: posOrderData.order_type,
+                customer_info: {
+                    name: posOrderData.customer_name,
+                    phone: orderDetails.phone || "",
+                    address: orderMode === 'delivery' ? orderDetails.address : null,
+                    notes: orderDetails.notes || ""
+                }
+            };
+            generateOrderTicket(legacyOrderData, orderDetails, cartItems, total);
 
             alert("Commande envoyée en cuisine ! Votre ticket a été téléchargé.");
             clearCart();
