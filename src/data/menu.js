@@ -15,7 +15,8 @@ export const MENU_DATA = [
                     { name: "Supplément Oeuf Mollet", price: 1.5 },
                     { name: "Supplément Chashu (2 tranches)", price: 3.0 },
                     { name: "Sans Cébettes", price: 0 },
-                    { name: "Bouillon Pimenté", price: 0.5 }
+                    { name: "Bouillon Pimenté", price: 0.5 },
+                    { name: "Taille Omori (Grand)", price: 4.0 }
                 ]
             },
             {
@@ -28,7 +29,8 @@ export const MENU_DATA = [
                 availableOptions: [
                     { name: "Supplément Oeuf Mollet", price: 1.5 },
                     { name: "Sans Cébettes", price: 0 },
-                    { name: "Bouillon Pimenté", price: 0.5 }
+                    { name: "Bouillon Pimenté", price: 0.5 },
+                    { name: "Taille Omori (Grand)", price: 4.0 }
                 ]
             },
             {
@@ -40,7 +42,8 @@ export const MENU_DATA = [
                 tags: ["original", "spicy"],
                 availableOptions: [
                     { name: "Supplément Poulet", price: 2.5 },
-                    { name: "Sans Oignons Frits", price: 0 }
+                    { name: "Sans Oignons Frits", price: 0 },
+                    { name: "Taille Omori (Grand)", price: 4.0 }
                 ]
             }
         ]
@@ -119,41 +122,6 @@ export const MENU_DATA = [
                 description: "Bol de riz Bio recouvert de tranches d'anguille grillée caramélisée (Unagi).",
                 image: "https://www.sushi-aixsud.com/259-large_default/una-chirashi.jpg",
                 tags: ["premium", "seafood"]
-            }
-        ]
-    },
-    {
-        id: "sushi",
-        title: "LE COMPTOIR SUSHI (KYO)",
-        description: "Poissons Label Rouge et Riz Bio AB impact carbone minimum.",
-        items: [
-            {
-                id: "sushi-saumon-10",
-                name: "Plateau 10 Sushi Saumon",
-                price: 16.90,
-                description: "Saumon Label Rouge d'Écosse sur riz vinaigré Bio.",
-                tags: ["seafood", "gluten_free"]
-            },
-            {
-                id: "sushi-mix-15",
-                name: "15 Sushi Mix",
-                price: 25.60,
-                description: "Assortiment du Chef : Thon, Saumon, Daurade, Crevette...",
-                tags: ["chef_choice", "seafood"]
-            },
-            {
-                id: "california-mix",
-                name: "18 California Mix",
-                price: 18.80,
-                description: "Plateau dégustation : Avocat-Saumon, Thon Cuit, Cheese...",
-                tags: ["popular"]
-            },
-            {
-                id: "chirashi-saumon",
-                name: "Chirashi Saumon",
-                price: 15.90,
-                description: "Tranches de saumon frais sur un grand bol de riz vinaigré.",
-                tags: ["healthy", "seafood"]
             }
         ]
     }

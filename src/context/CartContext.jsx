@@ -156,12 +156,14 @@ export const CartProvider = ({ children }) => {
         }
 
         setCartItems(prevItems => {
-            // Create a unique ID for the cart item based on product and options
-            // We'll use a composite key or just check deep equality of options
-            const existingItemIndex = prevItems.findIndex(i =>
-                i.name === item.name &&
-                JSON.stringify(i.selectedOptions) === JSON.stringify(options)
-            );
+            // Sort options for consistent matching
+            const sortedOptions = [...options].sort((a, b) => a.name.localeCompare(b.name));
+
+            const existingItemIndex = prevItems.findIndex(i => {
+                if (i.name !== item.name) return false;
+                const iSorted = [...(i.selectedOptions || [])].sort((a, b) => a.name.localeCompare(b.name));
+                return JSON.stringify(iSorted) === JSON.stringify(sortedOptions);
+            });
 
             if (existingItemIndex > -1) {
                 const newItems = [...prevItems];
@@ -171,7 +173,7 @@ export const CartProvider = ({ children }) => {
                 return [...prevItems, {
                     ...item,
                     quantity,
-                    selectedOptions: options,
+                    selectedOptions: sortedOptions,
                     cartId: `${item.name}-${Date.now()}` // Unique ID for React keys if needed
                 }];
             }
