@@ -100,7 +100,7 @@ const MenuSection = () => {
                                                     animate="show"
                                                 >
                                                     {category.items.map((item, i) => {
-                                                        const isUnavailable = unavailableItems.includes(item.name);
+                                                        const isUnavailable = unavailableItems.includes(item.posName || item.name);
 
                                                         return (
                                                             <motion.div

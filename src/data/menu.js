@@ -7,6 +7,7 @@ export const MENU_DATA = [
             {
                 id: "ramen-tonkotsu-classic",
                 name: "Ramen tonkotsu classic",
+                posName: "Ramen Classic",
                 price: 14.00,
                 description: "Bouillon porc mijoté, 3 tranches de Chashu, germes de soja, cébettes.",
                 image: "https://www.sushi-aixsud.com/853-large_default/ramen-tonkotsu-classic.jpg",
@@ -22,6 +23,7 @@ export const MENU_DATA = [
             {
                 id: "ramen-tonkotsu-chashu",
                 name: "Ramen tonkotsu cha-shu",
+                posName: "Ramen Cha-Shu",
                 price: 15.50,
                 description: "La version gourmande : 5 tranches de Chashu, œuf mollet mariné, bouillon riche.",
                 image: "https://www.sushi-aixsud.com/852-large_default/ramen-tonkotsu-cha-shu.jpg",
@@ -36,6 +38,7 @@ export const MENU_DATA = [
             {
                 id: "maze-men",
                 name: "Mazé men (ramen sans bouillon)",
+                posName: "Mazé Men",
                 price: 15.00,
                 description: "Ramen sèches, émincés de poulet mijotés, œuf mollet, oignons frits.",
                 image: "https://www.sushi-aixsud.com/854-large_default/maze-men-ramen-sans-bouillon.jpg",
@@ -56,6 +59,7 @@ export const MENU_DATA = [
             {
                 id: "gyoza-poulet",
                 name: "Gyoza poulet - legumes",
+                posName: "Gyoza Poulet",
                 price: 6.37,
                 description: "6 Raviolis grillés maison. Farce juteuse et pâte croustillante.",
                 image: "https://www.sushi-aixsud.com/226-large_default/gyoza-poulet-legumes.jpg",
@@ -68,6 +72,7 @@ export const MENU_DATA = [
             {
                 id: "ebi-fried",
                 name: "EBI FRIED",
+                posName: "Ebi Fried",
                 price: 10.40,
                 description: "5 Grosses crevettes panées Panko, sauce tartare japonaise.",
                 image: "https://www.sushi-aixsud.com/112-large_default/ebi-fried.jpg",
@@ -76,6 +81,7 @@ export const MENU_DATA = [
             {
                 id: "karaage",
                 name: "KARA AGE",
+                posName: "Kara Age",
                 price: 10.36,
                 description: "7 morceaux de poulet mariné au gingembre et soja, frit croustillant.",
                 image: "https://www.sushi-aixsud.com/127-large_default/karaage.jpg",
@@ -84,6 +90,7 @@ export const MENU_DATA = [
             {
                 id: "takoyaki",
                 name: "TAKOYAKI Classique",
+                posName: "Takoyaki",
                 price: 7.98,
                 description: "6 Boulettes de poulpe fondantes, sauce brune et mayonnaise.",
                 image: "https://www.sushi-aixsud.com/103-large_default/takoyaki.jpg",

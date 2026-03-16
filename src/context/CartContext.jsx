@@ -150,7 +150,8 @@ export const CartProvider = ({ children }) => {
 
     const addToCart = (item, quantity = 1, options = [], event = null) => {
         // Check stock
-        if (unavailableItems.includes(item.name)) {
+        const itemNameToCheck = item.posName || item.name;
+        if (unavailableItems.includes(itemNameToCheck)) {
             alert("Désolé, cet article est en rupture de stock.");
             return;
         }
@@ -229,7 +230,7 @@ export const CartProvider = ({ children }) => {
             items_json: cartItems.map(item => {
                 const optionsPrice = item.selectedOptions ? item.selectedOptions.reduce((acc, opt) => acc + opt.price, 0) : 0;
                 return {
-                    name: item.name,
+                    name: item.posName || item.name,
                     quantity: item.quantity,
                     price: item.price + optionsPrice,
                     options: item.selectedOptions || [],
