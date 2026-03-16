@@ -1,0 +1,71 @@
+Table,Colonne,Type de donnée,Nullable,Valeur par défaut,Clé Primaire,Clé Étrangère (Liaison)
+orders,id,bigint,NO,null,🔑 PK,null
+orders,created_at,timestamp with time zone,NO,"timezone('utc'::text, now())",,null
+orders,order_number,text,NO,null,,null
+orders,status,text,YES,'pending_print'::text,,null
+orders,type,text,NO,null,,null
+orders,customer_info,jsonb,YES,null,,null
+orders,items,jsonb,NO,null,,null
+orders,total_price,numeric,YES,null,,null
+orders,payment_method,text,YES,'counter'::text,,null
+orders,print_status,character varying,YES,'pending_print'::character varying,,null
+pos_logs,id,uuid,NO,gen_random_uuid(),🔑 PK,null
+pos_logs,session_id,text,YES,null,,null
+pos_logs,trace_id,text,YES,null,,null
+pos_logs,client_timestamp,bigint,NO,null,,null
+pos_logs,server_timestamp,timestamp with time zone,YES,"timezone('utc'::text, now())",,null
+pos_logs,level,text,NO,null,,null
+pos_logs,category,text,NO,null,,null
+pos_logs,event_name,text,NO,null,,null
+pos_logs,device_id,text,NO,null,,null
+pos_logs,user_id,text,YES,null,,null
+pos_logs,payload,jsonb,YES,'{}'::jsonb,,null
+pos_order_items,id,uuid,NO,gen_random_uuid(),🔑 PK,null
+pos_order_items,order_id,text,YES,null,,null
+pos_order_items,product_id,text,YES,null,,null
+pos_order_items,product_name,text,NO,null,,null
+pos_order_items,quantity,integer,NO,null,,null
+pos_order_items,unit_price,numeric,NO,null,,null
+pos_order_items,total_price,numeric,NO,null,,null
+pos_order_items,selected_modifiers,jsonb,YES,null,,null
+pos_orders,id,text,NO,null,🔑 PK,null
+pos_orders,total,numeric,NO,null,,null
+pos_orders,status,text,YES,'completed'::text,,null
+pos_orders,payment_method,text,YES,'card'::text,,null
+pos_orders,created_at,timestamp with time zone,YES,now(),,null
+pos_orders,payment_details,jsonb,YES,null,,null
+pos_orders,source_device,text,YES,null,,null
+pos_orders,order_type,text,YES,'sur_place'::text,,null
+pos_orders,items_json,jsonb,YES,'[]'::jsonb,,null
+pos_orders,customer_name,text,YES,''::text,,null
+pos_orders,pickup_time,text,YES,''::text,,null
+pos_orders,rappel_at,timestamp with time zone,YES,null,,null
+pos_products,id,text,NO,null,🔑 PK,null
+pos_products,name,text,NO,null,,null
+pos_products,price,numeric,NO,null,,null
+pos_products,category,text,NO,null,,null
+pos_products,description,text,YES,null,,null
+pos_products,image,text,YES,null,,null
+pos_products,available,boolean,YES,true,,null
+pos_products,modifier_groups,jsonb,YES,null,,null
+pos_products,tags,ARRAY,YES,null,,null
+pos_settings,id,smallint,NO,1,🔑 PK,null
+pos_settings,store_name,text,NO,'MITAKE RAMEN'::text,,null
+pos_settings,subtitle,text,NO,'Japanese Kitchen'::text,,null
+pos_settings,address,text,NO,"'569 Av. Henri Mauriat, 13100 Aix-en-Provence'::text",,null
+pos_settings,phone,text,NO,'09 72 21 38 99'::text,,null
+pos_settings,siret,text,NO,''::text,,null
+pos_settings,footer_message_1,text,NO,'Merci de votre visite !'::text,,null
+pos_settings,footer_message_2,text,NO,'À très bientôt.'::text,,null
+pos_settings,updated_at,timestamp with time zone,YES,"timezone('utc'::text, now())",,null
+pos_stock_status,product_id,text,NO,null,🔑 PK,null
+pos_stock_status,product_name,text,NO,null,,null
+pos_stock_status,available,boolean,YES,true,,null
+pos_stock_status,updated_at,timestamp with time zone,YES,now(),,null
+pos_stock_status,updated_by,text,YES,null,,null
+settings,id,bigint,NO,null,🔑 PK,null
+settings,is_delivery_available,boolean,YES,true,,null
+settings,unavailable_items,ARRAY,YES,'{}'::text[],,null
+waitlist,id,bigint,NO,null,🔑 PK,null
+waitlist,email,text,NO,null,,null
+waitlist,created_at,timestamp with time zone,NO,"timezone('utc'::text, now())",,null
