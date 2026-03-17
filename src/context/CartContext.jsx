@@ -225,7 +225,7 @@ export const CartProvider = ({ children }) => {
             status: 'pending', // CRITIQUE : "pending" signifie que la caisse doit l'encaisser/valider
             order_type: orderMode, // 'dine_in' | 'takeaway' | 'delivery'
             source_device: 'website',
-            customer_name: orderDetails.customerName || "Client Web",
+            customer_name: orderDetails.phone ? `${orderDetails.customerName || "Client Web"} - ${orderDetails.phone}` : (orderDetails.customerName || "Client Web"),
             pickup_time: orderDetails.pickupTime || new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
             items_json: cartItems.map(item => {
                 const optionsPrice = item.selectedOptions ? item.selectedOptions.reduce((acc, opt) => acc + opt.price, 0) : 0;
@@ -247,12 +247,12 @@ export const CartProvider = ({ children }) => {
             return {
                 id: crypto.randomUUID(),
                 order_id: orderId,
-                product_id: item.id || item.name.toLowerCase().replace(/\s+/g, '_'), // Fallback if no explicit ID
-                product_name: item.posName || item.name,
+                product_id: item.id || item.posName || item.name.toLowerCase().replace(/\s+/g, '-'),
+                product_name: item.name,
                 quantity: item.quantity,
                 unit_price: item.price + optionsPrice,
                 total_price: (item.price + optionsPrice) * item.quantity,
-                selected_modifiers: item.selectedOptions || []
+                selected_modifiers: JSON.stringify(item.selectedOptions || [])
             };
         });
 
