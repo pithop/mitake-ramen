@@ -43,8 +43,8 @@ export const CartProvider = ({ children }) => {
 
         // Realtime Subscription for Settings
         const settingsSubscription = supabase
-            .channel('public:pos_products')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'pos_products' }, (payload) => {
+            .channel('public:pos_stock_status')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pos_stock_status' }, (payload) => {
                 console.log('🔄 Realtime Product Update:', payload);
                 // We re-fetch all settings to ensure we get the full list of unavailable items correctly.
                 // Could also optimize by just updating the local array based on the single payload.
@@ -95,17 +95,17 @@ export const CartProvider = ({ children }) => {
     };
 
     const fetchSettings = async () => {
-        // Fetch out-of-stock items dynamically from pos_products
+        // Fetch out-of-stock items dynamically from pos_stock_status
         try {
             const { data: outOfStockProducts, error: productsError } = await supabase
-                .from('pos_products')
-                .select('name') // Or 'id', but MenuCard relies on name currently
+                .from('pos_stock_status')
+                .select('product_name')
                 .eq('available', false);
 
             if (productsError) {
                 console.error('Error fetching out of stock products:', productsError);
             } else if (outOfStockProducts) {
-                const outOfStockNames = outOfStockProducts.map(p => p.name);
+                const outOfStockNames = outOfStockProducts.map(p => p.product_name);
                 setUnavailableItems(outOfStockNames);
             }
 
