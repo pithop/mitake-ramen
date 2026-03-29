@@ -60,7 +60,7 @@ const Footer = () => {
                                 <span>Samedi</span>
                                 <span>18h00 - 21h00</span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-4 italic">Fermé le Lundi &  Dimanche</p>
+                            <p className="text-xs text-gray-500 mt-4 italic">Fermé Lundi &  Dimanche</p>
                         </div>
                     </div>
                 </div>
