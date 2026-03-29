@@ -19,6 +19,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import SeoHead from './components/SeoHead';
 import StoreStatusBanner from './components/StoreStatusBanner';
+import StoreClosureModal from './components/StoreClosureModal';
 
 // Wrapper component to access context for OrderModeModal
 const AppContent = () => {
@@ -33,6 +34,7 @@ const AppContent = () => {
     <>
       <Analytics />
       <StoreStatusBanner />
+      <StoreClosureModal />
       <OrderModeModal
         isOpen={isOrderModeModalOpen}
         onClose={() => setIsOrderModeModalOpen(false)}
