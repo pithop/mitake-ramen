@@ -59,12 +59,12 @@ const StoreClosureModal = () => {
                         {/* Body */}
                         <div className="p-8 flex flex-col items-center text-center space-y-6">
                             <p className="text-mitake-offwhite text-lg leading-relaxed">
-                                Chère clientèle, notre établissement sera exceptionnellement fermé le <strong className="text-white">mardi 30 mars</strong>.
+                                Chère clientèle, notre établissement sera exceptionnellement fermé le <strong className="text-white">mardi 31 mars</strong>.
                             </p>
-                            
+
                             <div className="bg-black/50 p-4 rounded-xl border border-white/10 w-full">
                                 <p className="text-gray-300">
-                                    Nous rouvrirons nos portes le <strong className="text-mitake-gold">mercredi 31 mars au matin</strong>.
+                                    Nous rouvrirons nos portes le <strong className="text-mitake-gold">mercredi 1er avril au matin</strong>.
                                 </p>
                                 <p className="text-gray-400 text-sm mt-2 italic">
                                     (Rappel : Nous fermons habituellement nos portes tous les mercredis soirs.)
