@@ -7,6 +7,12 @@ const StoreClosureModal = () => {
     const MODAL_VERSION = 'closure_2026_03_30_v1'; // Change this key for future temporary modals
 
     useEffect(() => {
+        // Expiration: S'arrête automatiquement ce soir à minuit (passage au 1er Avril 2026)
+        const expirationDate = new Date('2026-04-01T00:00:00+02:00');
+        if (new Date() >= expirationDate) {
+            return; // La modale a expiré
+        }
+
         // Check if the user has already seen this specific modal version
         const hasSeenModal = localStorage.getItem(MODAL_VERSION);
         if (!hasSeenModal) {
