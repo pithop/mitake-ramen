@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { getNextOpeningTime } from '../utils/storeSettings';
 
 const StoreStatusBanner = () => {
-    const { isStoreOpen } = useCart();
+    const { isStoreOpen, isDeliveryAvailable } = useCart();
     const [nextOpening, setNextOpening] = useState('');
 
     useEffect(() => {
@@ -13,7 +13,8 @@ const StoreStatusBanner = () => {
         }
     }, [isStoreOpen]);
 
-    if (isStoreOpen) return null;
+    // If online ordering is ENABLED (isDeliveryAvailable is true), we don't show the "phone only" banner
+    if (isDeliveryAvailable) return null;
 
     return (
         <div className="bg-slate-800 text-white px-4 py-2 flex items-center justify-center gap-3 text-sm md:text-base font-bold shadow-lg z-50 relative">

@@ -32,8 +32,10 @@ export const CartProvider = ({ children }) => {
 
     // Mock Data - Restaurant State
     // In a real app, this would come from an API
-    const [isDeliveryAvailable, setIsDeliveryAvailable] = useState(true);
+    const [isDeliveryAvailable, setIsDeliveryAvailable] = useState(true); // Repurposed for Online Ordering Master Switch
     const [unavailableItems, setUnavailableItems] = useState([]); // Array of item IDs (using titles as IDs for now if no explicit ID)
+    const [customPrices, setCustomPrices] = useState({}); // Dynamic supplement prices
+    const [isDeliveryModeEnabled, setIsDeliveryModeEnabled] = useState(true); // Separate delivery mode toggle
 
     // Load admin state from Supabase on mount & Subscribe to changes
     useEffect(() => {
@@ -109,9 +111,34 @@ export const CartProvider = ({ children }) => {
                 setUnavailableItems(outOfStockNames);
             }
 
-            // In a real POS integration, Delivery Availability might come from another table or stay in 'settings'
-            // For now, we will leave it as true by default, or you can fetch it if still needed.
-            setIsDeliveryAvailable(true);
+            // Fetch global settings (Online Ordering Switch & Custom Prices)
+            const { data: settingsData } = await supabase
+                .from('settings')
+                .select('*')
+                .eq('id', 1)
+                .single();
+
+            if (settingsData) {
+                setIsDeliveryAvailable(settingsData.is_delivery_available);
+                
+                // Parse custom prices and delivery mode from unavailable_items
+                if (settingsData.unavailable_items) {
+                    const parsedPrices = {};
+                    settingsData.unavailable_items.forEach(item => {
+                        if (item.startsWith('PRICE||')) {
+                            const [, name, priceStr] = item.split('||');
+                            parsedPrices[name] = parseFloat(priceStr);
+                        }
+                        if (item === 'SETTING||delivery_mode||false') {
+                            setIsDeliveryModeEnabled(false);
+                        }
+                        if (item === 'SETTING||delivery_mode||true') {
+                            setIsDeliveryModeEnabled(true);
+                        }
+                    });
+                    setCustomPrices(parsedPrices);
+                }
+            }
 
         } catch (err) {
             console.error('Unexpected error in fetchSettings:', err);
@@ -328,9 +355,12 @@ export const CartProvider = ({ children }) => {
         setIsOrderInterceptModalOpen,
         isDeliveryAvailable,
         setIsDeliveryAvailable, // Exposed for Admin
+        customPrices, // Exposed for dynamic override
         unavailableItems,
         setUnavailableItems, // Exposed for Admin
         updateSettings, // Exposed for Admin
+        isDeliveryModeEnabled, // Exposed for delivery toggle
+        setIsDeliveryModeEnabled, // Exposed for Admin
         submitOrderToPOS,
         // New Logic
         waitTime,

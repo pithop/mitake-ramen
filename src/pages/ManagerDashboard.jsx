@@ -17,12 +17,18 @@ const ManagerDashboard = () => {
     const {
         isDeliveryAvailable,
         unavailableItems,
-        updateSettings
+        updateSettings,
+        isDeliveryModeEnabled
     } = useCart();
 
     const [localUnavailable, setLocalUnavailable] = useState([...unavailableItems]);
     const [localDelivery, setLocalDelivery] = useState(isDeliveryAvailable);
+    const [localDeliveryMode, setLocalDeliveryMode] = useState(isDeliveryModeEnabled);
     const [searchTerm, setSearchTerm] = useState('');
+    const [editingPrices, setEditingPrices] = useState({});
+
+    // Supplements to manage prices for
+    const SUPPLEMENTS = ["Supplément Oeuf Mollet", "Supplément Chashu (2 tranches)", "Taille Omori (Grand)", "Supplément Poulet", "Bouillon Pimenté"];
 
     // KPI Data States
     const [orders, setOrders] = useState([]);
@@ -32,6 +38,16 @@ const ManagerDashboard = () => {
     useEffect(() => {
         setLocalUnavailable([...unavailableItems]);
         setLocalDelivery(isDeliveryAvailable);
+        setLocalDeliveryMode(isDeliveryModeEnabled);
+        
+        const newEditingPrices = {};
+        unavailableItems.forEach(item => {
+            if (item.startsWith('PRICE||')) {
+                const [, name, priceStr] = item.split('||');
+                newEditingPrices[name] = priceStr;
+            }
+        });
+        setEditingPrices(newEditingPrices);
     }, [unavailableItems, isDeliveryAvailable]);
 
     // Fetch Orders for KPIs
@@ -149,13 +165,44 @@ const ManagerDashboard = () => {
         setLocalDelivery(newDelivery);
 
         if (newDelivery) {
+            addToast("Commandes en ligne ACTIVÉES", 'success');
+        } else {
+            addToast("Commandes en ligne DÉSACTIVÉES", 'info');
+        }
+
+        // Background Save
+        await updateSettings(newDelivery, localUnavailable);
+    };
+
+    const toggleDeliveryMode = async () => {
+        const newMode = !localDeliveryMode;
+        setLocalDeliveryMode(newMode);
+
+        if (newMode) {
             addToast("Livraison ACTIVÉE", 'success');
         } else {
             addToast("Livraison DÉSACTIVÉE", 'info');
         }
 
-        // Background Save
-        await updateSettings(newDelivery, localUnavailable);
+        // Build new unavailable items with updated delivery mode setting
+        const filtered = localUnavailable.filter(item => !item.startsWith('SETTING||delivery_mode||'));
+        const newUnavailable = [...filtered, `SETTING||delivery_mode||${newMode}`];
+        setLocalUnavailable(newUnavailable);
+        await updateSettings(localDelivery, newUnavailable);
+    };
+
+    const updateSupplementPrice = async (supplementName, newPriceStr) => {
+        const price = parseFloat(newPriceStr);
+        if (isNaN(price)) return;
+        
+        const priceStrKey = `PRICE||${supplementName}||`;
+        // Remove any old price for this supplement
+        const filtered = localUnavailable.filter(item => !item.startsWith(`PRICE||${supplementName}||`));
+        const newUnavailable = [...filtered, `${priceStrKey}${price}`];
+        
+        setLocalUnavailable(newUnavailable);
+        addToast(`Prix de ${supplementName} mis à jour (${price}€)`, 'success');
+        await updateSettings(localDelivery, newUnavailable);
     };
 
     if (authLoading) return (
@@ -299,18 +346,18 @@ const ManagerDashboard = () => {
                     })()}
                 </section>
 
-                {/* Master Switch - Delivery */}
+                {/* Master Switch - Online Ordering */}
                 <section className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
                             <h2 className="text-xl font-bold flex items-center gap-2">
                                 <Power size={20} className={localDelivery ? "text-green-400" : "text-red-400"} />
-                                Mode Livraison
+                                Commandes en Ligne
                             </h2>
                             <p className="text-gray-400 text-sm mt-1">
                                 {localDelivery
-                                    ? "✅ La livraison est ACTIVÉE sur le site."
-                                    : "⛔ La livraison est DÉSACTIVÉE (Message 'Pas de livreur')."}
+                                    ? "✅ Les commandes en ligne sont ACTIVÉES (Les clients peuvent payer/commander)."
+                                    : "⛔ Les commandes en ligne sont DÉSACTIVÉES (Message 'Par téléphone uniquement')."}
                             </p>
                         </div>
                         <button
@@ -319,6 +366,66 @@ const ManagerDashboard = () => {
                         >
                             <div className={`bg-white w-7 h-7 rounded-full shadow-md transform transition-transform duration-300 ${localDelivery ? 'translate-x-7' : 'translate-x-0'}`} />
                         </button>
+                    </div>
+                </section>
+
+                {/* Master Switch - Delivery Mode */}
+                <section className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Power size={20} className={localDeliveryMode ? "text-green-400" : "text-red-400"} />
+                                Mode Livraison
+                            </h2>
+                            <p className="text-gray-400 text-sm mt-1">
+                                {localDeliveryMode
+                                    ? "✅ La livraison est ACTIVÉE sur le site."
+                                    : "⛔ La livraison est DÉSACTIVÉE (Les clients ne voient que Sur Place / À Emporter)."}
+                            </p>
+                        </div>
+                        <button
+                            onClick={toggleDeliveryMode}
+                            className={`w-16 h-9 rounded-full p-1 transition-colors duration-300 ${localDeliveryMode ? 'bg-green-500' : 'bg-gray-600'}`}
+                        >
+                            <div className={`bg-white w-7 h-7 rounded-full shadow-md transform transition-transform duration-300 ${localDeliveryMode ? 'translate-x-7' : 'translate-x-0'}`} />
+                        </button>
+                    </div>
+                </section>
+
+                {/* Supplements Pricing */}
+                <section className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg mt-8">
+                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-mitake-gold">
+                        <DollarSign size={20} />
+                        Gestion des Prix des Suppléments
+                    </h2>
+                    <p className="text-gray-400 text-sm mb-6">Mettez à jour dynamiquement le prix des suppléments proposés avec les Ramens.</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {SUPPLEMENTS.map(supp => {
+                            const customPrice = editingPrices[supp] !== undefined ? editingPrices[supp] : '';
+                            return (
+                                <div key={supp} className="flex justify-between items-center p-3 bg-white/5 border border-white/10 rounded-lg">
+                                    <span className="font-medium text-gray-200">{supp}</span>
+                                    <div className="flex gap-2 items-center">
+                                        <input
+                                            type="number"
+                                            step="0.5"
+                                            placeholder="Prix par ex. 2.5"
+                                            value={customPrice}
+                                            onChange={(e) => setEditingPrices(prev => ({ ...prev, [supp]: e.target.value }))}
+                                            className="w-20 bg-black/50 border border-white/10 rounded-md px-2 py-1 text-center outline-none focus:border-mitake-gold"
+                                        />
+                                        <span className="text-gray-400">€</span>
+                                        <button 
+                                            onClick={() => updateSupplementPrice(supp, editingPrices[supp])}
+                                            disabled={!editingPrices[supp] || editingPrices[supp] === customPrice && false}
+                                            className="ml-2 bg-mitake-gold text-black p-1 rounded-md hover:bg-white"
+                                        >
+                                            <Save size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </section>
 

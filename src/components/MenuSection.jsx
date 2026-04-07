@@ -13,7 +13,7 @@ const MenuSection = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOptionsModal, setSelectedOptionsModal] = useState([]);
-    const { addToCart, unavailableItems } = useCart();
+    const { addToCart, unavailableItems, customPrices } = useCart();
 
     const getCategories = (tab) => {
         switch (tab) {
@@ -204,16 +204,23 @@ const MenuSection = () => {
                             <div className="p-6 overflow-y-auto space-y-4">
                                 <h4 className="text-sm uppercase tracking-wider text-gray-500 font-semibold mb-3">Suppléments (Optionnels)</h4>
                                 {selectedItem.availableOptions.map((opt, idx) => {
-                                    const isSelected = selectedOptionsModal.some(o => o.name === opt.name);
+                                    // Apply custom price if overridden by Admin Manager Dashboard
+                                    const activePrice = customPrices && customPrices[opt.name] !== undefined 
+                                        ? customPrices[opt.name] 
+                                        : opt.price;
+                                        
+                                    const dynamicOpt = { ...opt, price: activePrice };
+                                    const isSelected = selectedOptionsModal.some(o => o.name === dynamicOpt.name);
+                                    
                                     return (
                                         <label
                                             key={idx}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 if (isSelected) {
-                                                    setSelectedOptionsModal(prev => prev.filter(o => o.name !== opt.name));
+                                                    setSelectedOptionsModal(prev => prev.filter(o => o.name !== dynamicOpt.name));
                                                 } else {
-                                                    setSelectedOptionsModal(prev => [...prev, opt]);
+                                                    setSelectedOptionsModal(prev => [...prev, dynamicOpt]);
                                                 }
                                             }}
                                             className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all duration-300 ${isSelected
@@ -226,9 +233,9 @@ const MenuSection = () => {
                                                     }`}>
                                                     {isSelected && <svg className="w-3 h-3 text-mitake-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                                                 </div>
-                                                <span className={`text-base ${isSelected ? 'text-mitake-offwhite' : 'text-gray-400'}`}>{opt.name}</span>
+                                                <span className={`text-base ${isSelected ? 'text-mitake-offwhite' : 'text-gray-400'}`}>{dynamicOpt.name}</span>
                                             </div>
-                                            <span className="text-mitake-gold text-sm">+ {opt.price.toFixed(2)} €</span>
+                                            <span className="text-mitake-gold text-sm">+ {dynamicOpt.price.toFixed(2)} €</span>
                                         </label>
                                     );
                                 })}

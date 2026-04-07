@@ -16,7 +16,8 @@ const CartDrawer = () => {
         setIsOrderModeModalOpen,
         setIsOrderInterceptModalOpen,
         waitTime,
-        addToCart
+        addToCart,
+        isDeliveryAvailable
     } = useCart();
 
     const total = getCartTotal();
@@ -25,7 +26,11 @@ const CartDrawer = () => {
         // If order mode is not selected, open the modal first
         if (!orderMode) {
             setIsCartOpen(false); // Close cart drawer
-            setIsOrderInterceptModalOpen(true); // Open Intercept Modal instead of OrderModeModal
+            if (isDeliveryAvailable) {
+                setIsOrderModeModalOpen(true);
+            } else {
+                setIsOrderInterceptModalOpen(true); // Open Intercept Modal
+            }
         } else {
             // Mode is already selected, submit the order
             submitOrderToPOS();

@@ -60,7 +60,7 @@ export const MENU_DATA = [
                 id: "gyoza-poulet",
                 name: "Gyoza poulet - legumes",
                 posName: "Gyoza Poulet",
-                price: 6.37,
+                price: 6.40,
                 description: "6 Raviolis grillés maison. Farce juteuse et pâte croustillante.",
                 image: "https://www.sushi-aixsud.com/226-large_default/gyoza-poulet-legumes.jpg",
                 qty_label: "6 pièces",
@@ -82,7 +82,7 @@ export const MENU_DATA = [
                 id: "karaage",
                 name: "KARA AGE",
                 posName: "Kara Age",
-                price: 10.36,
+                price: 10.40,
                 description: "7 morceaux de poulet mariné au gingembre et soja, frit croustillant.",
                 image: "https://www.sushi-aixsud.com/127-large_default/karaage.jpg",
                 tags: ["popular"]
@@ -91,7 +91,7 @@ export const MENU_DATA = [
                 id: "takoyaki",
                 name: "TAKOYAKI Classique",
                 posName: "Takoyaki",
-                price: 7.98,
+                price: 7.90,
                 description: "6 Boulettes de poulpe fondantes, sauce brune et mayonnaise.",
                 image: "https://www.sushi-aixsud.com/103-large_default/takoyaki.jpg",
                 tags: ["original"]
@@ -105,7 +105,7 @@ export const MENU_DATA = [
             {
                 id: "katsu-curry",
                 name: "Curry Torikatsu",
-                price: 15.39,
+                price: 15.40,
                 description: "Filet de poulet pané croustillant sur riz Bio, nappé de curry japonais doux.",
                 image: "https://www.sushi-aixsud.com/549-large_default/curry-torikatsu.jpg",
                 tags: ["spicy"],
@@ -117,7 +117,7 @@ export const MENU_DATA = [
             {
                 id: "saumon-teriyaki",
                 name: "SAUMON TERIYAKI",
-                price: 17.96,
+                price: 18.00,
                 description: "Pavé de saumon Label Rouge laqué sauce soja sucrée, légumes et riz Bio.",
                 image: "https://www.sushi-aixsud.com/124-large_default/saumon-teriyaki.jpg",
                 tags: ["healthy", "seafood"]
