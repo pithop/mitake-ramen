@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { MENU_DATA } from '../data/menu';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, AlertCircle } from 'lucide-react';
+import { Plus, Minus, AlertCircle, Eye } from 'lucide-react';
+import ProductDetailModal from './ProductDetailModal';
 import yakitoriImage from '../assets/section-yakitori.png';
 import ramenChashuImage from '../assets/ramen-chashu.png';
 import sushiImage from '../assets/section-sushi.png';
@@ -14,6 +15,8 @@ const MenuSection = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOptionsModal, setSelectedOptionsModal] = useState([]);
     const { addToCart, unavailableItems, customPrices } = useCart();
+    const [detailItem, setDetailItem] = useState(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
 
     const getCategories = (tab) => {
         switch (tab) {
@@ -115,7 +118,7 @@ const MenuSection = () => {
                                                                     }`}
                                                             >
                                                                 <div className="flex justify-between items-start gap-3 md:gap-4">
-                                                                    <div className="flex-1 min-w-0">
+                                                                     <div className="flex-1 min-w-0">
                                                                         <h4 className={`text-base md:text-lg font-medium mb-2 ${isUnavailable
                                                                             ? 'text-gray-500'
                                                                             : 'text-mitake-offwhite group-hover/item:text-mitake-gold transition-colors duration-300'
@@ -126,6 +129,20 @@ const MenuSection = () => {
                                                                             <p className="text-sm md:text-base text-gray-400 mt-1 font-light leading-relaxed">
                                                                                 {item.description}
                                                                             </p>
+                                                                        )}
+                                                                        {/* Detail Link */}
+                                                                        {!isUnavailable && (
+                                                                            <button
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setDetailItem(item);
+                                                                                    setIsDetailOpen(true);
+                                                                                }}
+                                                                                className="inline-flex items-center gap-1.5 mt-2 text-xs text-mitake-gold/70 hover:text-mitake-gold transition-colors font-medium group/link"
+                                                                            >
+                                                                                <Eye size={13} className="group-hover/link:scale-110 transition-transform" />
+                                                                                Voir les détails
+                                                                            </button>
                                                                         )}
                                                                     </div>
                                                                     <div className="flex flex-col items-end gap-3 shrink-0">
@@ -259,6 +276,16 @@ const MenuSection = () => {
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* Product Detail Modal */}
+            <ProductDetailModal
+                item={detailItem}
+                isOpen={isDetailOpen}
+                onClose={() => {
+                    setIsDetailOpen(false);
+                    setTimeout(() => setDetailItem(null), 300);
+                }}
+            />
         </section >
     );
 };
