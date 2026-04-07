@@ -18,7 +18,8 @@ const ManagerDashboard = () => {
         isDeliveryAvailable,
         unavailableItems,
         updateSettings,
-        isDeliveryModeEnabled
+        isDeliveryModeEnabled,
+        setIsDeliveryModeEnabled
     } = useCart();
 
     const [localUnavailable, setLocalUnavailable] = useState([...unavailableItems]);
@@ -177,6 +178,7 @@ const ManagerDashboard = () => {
     const toggleDeliveryMode = async () => {
         const newMode = !localDeliveryMode;
         setLocalDeliveryMode(newMode);
+        setIsDeliveryModeEnabled(newMode); // Update context immediately
 
         if (newMode) {
             addToast("Livraison ACTIVÉE", 'success');
