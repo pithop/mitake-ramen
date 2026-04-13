@@ -262,8 +262,9 @@ export const CartProvider = ({ children }) => {
     const submitOrderToPOS = async () => {
         const total = getCartTotal();
         
-        // Generate daily sequential web ID
+        // Generate daily sequential web ID with DATE PREFIX to guarantee primary key uniqueness
         const todayStr = new Date().toISOString().split('T')[0];
+        const datePrefix = todayStr.replace(/-/g, '').slice(2); // e.g. "260413"
         const { count } = await supabase
             .from('pos_orders')
             .select('*', { count: 'exact', head: true })
@@ -271,7 +272,7 @@ export const CartProvider = ({ children }) => {
             .gte('created_at', todayStr);
             
         const orderNum = (count !== null ? count + 1 : 1);
-        const orderId = `WEB-${String(orderNum).padStart(3, '0')}`;
+        const orderId = `W${datePrefix}-${String(orderNum).padStart(3, '0')}`;
 
         // 1. PREPARE pos_orders PAYLOAD
         const posOrderData = {
