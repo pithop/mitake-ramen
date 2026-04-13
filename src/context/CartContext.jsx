@@ -261,7 +261,17 @@ export const CartProvider = ({ children }) => {
 
     const submitOrderToPOS = async () => {
         const total = getCartTotal();
-        const orderId = crypto.randomUUID();
+        
+        // Generate daily sequential web ID
+        const todayStr = new Date().toISOString().split('T')[0];
+        const { count } = await supabase
+            .from('pos_orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('source_device', 'website')
+            .gte('created_at', todayStr);
+            
+        const orderNum = (count !== null ? count + 1 : 1);
+        const orderId = `WEB-${String(orderNum).padStart(3, '0')}`;
 
         // 1. PREPARE pos_orders PAYLOAD
         const posOrderData = {
