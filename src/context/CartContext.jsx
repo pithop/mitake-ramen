@@ -35,6 +35,7 @@ export const CartProvider = ({ children }) => {
     const [isDeliveryAvailable, setIsDeliveryAvailable] = useState(true); // Repurposed for Online Ordering Master Switch
     const [unavailableItems, setUnavailableItems] = useState([]); // Array of item IDs (using titles as IDs for now if no explicit ID)
     const [customPrices, setCustomPrices] = useState({}); // Dynamic supplement prices
+    const [posBasePrices, setPosBasePrices] = useState({}); // Base prices from pos_products sync
     const [isDeliveryModeEnabled, setIsDeliveryModeEnabled] = useState(true); // Separate delivery mode toggle
 
     // Load admin state from Supabase on mount & Subscribe to changes
@@ -109,6 +110,23 @@ export const CartProvider = ({ children }) => {
             } else if (outOfStockProducts) {
                 const outOfStockNames = outOfStockProducts.map(p => p.product_name);
                 setUnavailableItems(outOfStockNames);
+            }
+
+            // Fetch base prices from pos_products to keep website prices 100% in sync
+            try {
+                const { data: posProductsData, error: posProductsError } = await supabase
+                    .from('pos_products')
+                    .select('name, price');
+                
+                if (!posProductsError && posProductsData) {
+                    const priceMap = {};
+                    posProductsData.forEach(p => {
+                        priceMap[p.name] = parseFloat(p.price);
+                    });
+                    setPosBasePrices(priceMap);
+                }
+            } catch (err) {
+                console.error('Failed to sync base prices:', err);
             }
 
             // Fetch global settings (Online Ordering Switch & Custom Prices)
@@ -265,7 +283,10 @@ export const CartProvider = ({ children }) => {
                 };
             }),
             payment_method: 'unpaid',
-            payment_details: []
+            payment_details: [{
+                delivery_address: orderMode === 'delivery' ? orderDetails.address : null,
+                customer_notes: orderDetails.notes || ""
+            }]
         };
 
         // 2. PREPARE pos_order_items PAYLOAD
@@ -356,6 +377,7 @@ export const CartProvider = ({ children }) => {
         isDeliveryAvailable,
         setIsDeliveryAvailable, // Exposed for Admin
         customPrices, // Exposed for dynamic override
+        posBasePrices, // Expose for dynamic base price sync
         unavailableItems,
         setUnavailableItems, // Exposed for Admin
         updateSettings, // Exposed for Admin

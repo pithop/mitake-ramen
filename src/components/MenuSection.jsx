@@ -14,7 +14,7 @@ const MenuSection = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOptionsModal, setSelectedOptionsModal] = useState([]);
-    const { addToCart, unavailableItems, customPrices } = useCart();
+    const { addToCart, unavailableItems, customPrices, posBasePrices } = useCart();
     const [detailItem, setDetailItem] = useState(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
@@ -102,8 +102,15 @@ const MenuSection = () => {
                                                     initial="hidden"
                                                     animate="show"
                                                 >
-                                                    {category.items.map((item, i) => {
-                                                        const isUnavailable = unavailableItems.includes(item.posName || item.name);
+                                                    {category.items.map((rawItem, i) => {
+                                                        const isUnavailable = unavailableItems.includes(rawItem.posName || rawItem.name);
+
+                                                        // Sync dynamic base price from POS
+                                                        const syncedPrice = posBasePrices && posBasePrices[rawItem.posName || rawItem.name] !== undefined 
+                                                            ? posBasePrices[rawItem.posName || rawItem.name] 
+                                                            : rawItem.price;
+
+                                                        const item = { ...rawItem, price: syncedPrice };
 
                                                         return (
                                                             <motion.div
