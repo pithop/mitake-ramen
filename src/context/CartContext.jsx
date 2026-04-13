@@ -55,11 +55,39 @@ export const CartProvider = ({ children }) => {
             })
             .subscribe();
 
-        // Realtime Subscription for Orders (to update wait time)
+        // Realtime Subscription for Orders (to update wait time & track notifications)
         const ordersSubscription = supabase
             .channel('public:pos_orders')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'pos_orders' }, () => {
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pos_orders' }, (payload) => {
                 fetchActiveOrdersCount();
+                
+                if (payload.eventType === 'UPDATE' && payload.new) {
+                    const newRecord = payload.new;
+                    const tracked = JSON.parse(localStorage.getItem('mitake_tracked_orders') || '[]');
+                    
+                    if (tracked.includes(newRecord.id)) {
+                        // Check if it became ready
+                        const pd = Array.isArray(newRecord.payment_details) ? newRecord.payment_details : [newRecord.payment_details];
+                        const isReady = pd.some(d => d && d.is_ready === true);
+                        
+                        if (isReady || newRecord.status === 'ready' || newRecord.status === 'completed') {
+                            // Trigger Notification
+                            if (window.Notification && Notification.permission === "granted") {
+                                new Notification("🍜 MitaKe Ramen", {
+                                    body: `Génial ! Votre commande ${newRecord.id.split('-')[0]} est PRÊTE ! 🎉`,
+                                    icon: "/favicon.ico"
+                                });
+                            } else {
+                                // Fallback alert if they are still on the page
+                                alert(`🍜 MitaKe Ramen : Votre commande ${newRecord.id.split('-')[0]} est PRÊTE !`);
+                            }
+                            
+                            // Remove from tracked list
+                            const updatedTracked = tracked.filter(id => id !== newRecord.id);
+                            localStorage.setItem('mitake_tracked_orders', JSON.stringify(updatedTracked));
+                        }
+                    }
+                }
             })
             .subscribe();
 
@@ -357,6 +385,22 @@ export const CartProvider = ({ children }) => {
                 }
             };
             generateOrderTicket(legacyOrderData, orderDetails, cartItems, total);
+
+            // Web Notification Tracking
+            try {
+                if (window.Notification && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                    await Notification.requestPermission();
+                }
+            } catch (e) {
+                console.log("Notifications non supportées ou refusées.");
+            }
+
+            // Save to LocalStorage for tracking
+            const tracked = JSON.parse(localStorage.getItem('mitake_tracked_orders') || '[]');
+            if (!tracked.includes(orderId)) {
+                tracked.push(orderId);
+                localStorage.setItem('mitake_tracked_orders', JSON.stringify(tracked));
+            }
 
             alert("Commande envoyée en cuisine ! Votre ticket a été téléchargé.");
             clearCart();
