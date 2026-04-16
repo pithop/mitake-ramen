@@ -77,12 +77,28 @@ export const CartProvider = ({ children }) => {
                         const isReady = pd.some(d => d && d.is_ready === true);
                         
                         if (isReady || newRecord.status === 'ready' || newRecord.status === 'completed') {
-                            // Trigger Notification
+                            // Trigger Notification via Service Worker (Required for Android Chrome)
                             if (window.Notification && Notification.permission === "granted") {
-                                new Notification("🍜 MitaKe Ramen", {
-                                    body: `Génial ! Votre commande ${newRecord.id.split('-')[0]} est PRÊTE ! 🎉`,
-                                    icon: "/favicon.ico"
-                                });
+                                if ('serviceWorker' in navigator) {
+                                    navigator.serviceWorker.getRegistration().then(function(reg) {
+                                        const title = "🍜 MitaKe Ramen";
+                                        const options = {
+                                            body: `Génial ! Votre commande ${newRecord.id.split('-')[0]} est PRÊTE ! 🎉`,
+                                            icon: "/mitake-icon.png",
+                                            vibrate: [200, 100, 200, 100, 200, 100, 200]
+                                        };
+                                        if (reg) {
+                                            reg.showNotification(title, options);
+                                        } else {
+                                            new Notification(title, options);
+                                        }
+                                    });
+                                } else {
+                                    new Notification("🍜 MitaKe Ramen", {
+                                        body: `Génial ! Votre commande ${newRecord.id.split('-')[0]} est PRÊTE ! 🎉`,
+                                        icon: "/mitake-icon.png"
+                                    });
+                                }
                             }
                             
                             // Trigger premium in-app modal globally
@@ -394,10 +410,11 @@ export const CartProvider = ({ children }) => {
             };
             generateOrderTicket(legacyOrderData, orderDetails, cartItems, total);
 
-            // Web Notification Tracking
+            // Web Notification Permission — request AFTER successful order (user gesture context)
             try {
-                if (window.Notification && Notification.permission !== "granted" && Notification.permission !== "denied") {
-                    await Notification.requestPermission();
+                if ('Notification' in window && Notification.permission === 'default') {
+                    const perm = await Notification.requestPermission();
+                    console.log('Notification permission:', perm);
                 }
             } catch (e) {
                 console.log("Notifications non supportées ou refusées.");
