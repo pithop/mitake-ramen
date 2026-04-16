@@ -7,7 +7,11 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 const OrderModeModal = ({ isOpen, onClose }) => {
-    const { setOrderMode, setOrderDetails, isDeliveryAvailable, setIsCartOpen, isStoreOpen } = useCart();
+    const { 
+        setOrderMode, setOrderDetails, 
+        isDeliveryAvailable, isDineInModeEnabled, isTakeawayModeEnabled,
+        setIsCartOpen, isStoreOpen 
+    } = useCart();
     const [selectedMode, setSelectedMode] = useState(null); // 'dine_in', 'takeaway', 'delivery'
     const [availableSlots, setAvailableSlots] = useState([]);
     const [availableDates, setAvailableDates] = useState([]);
@@ -127,9 +131,9 @@ const OrderModeModal = ({ isOpen, onClose }) => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
                             {/* Dine In */}
                             <button
-                                onClick={() => isStoreOpen && setSelectedMode('dine_in')}
-                                disabled={!isStoreOpen}
-                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group ${!isStoreOpen
+                                onClick={() => isStoreOpen && isDineInModeEnabled && setSelectedMode('dine_in')}
+                                disabled={!isStoreOpen || !isDineInModeEnabled}
+                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group relative ${(!isStoreOpen || !isDineInModeEnabled)
                                     ? 'opacity-50 cursor-not-allowed bg-white/5 border-white/5'
                                     : selectedMode === 'dine_in'
                                         ? 'bg-mitake-gold/10 border-mitake-gold text-mitake-gold'
@@ -138,18 +142,27 @@ const OrderModeModal = ({ isOpen, onClose }) => {
                             >
                                 <Utensils size={40} className={`md:w-12 md:h-12 ${selectedMode === 'dine_in' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'}`} />
                                 <span className="text-lg md:text-xl font-bold">Sur Place</span>
+                                {!isDineInModeEnabled && (
+                                    <span className="absolute bottom-2 text-xs text-red-400 font-medium">Complet ce soir</span>
+                                )}
                             </button>
 
                             {/* Takeaway */}
                             <button
-                                onClick={() => setSelectedMode('takeaway')}
-                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group ${selectedMode === 'takeaway'
-                                    ? 'bg-mitake-gold/10 border-mitake-gold text-mitake-gold'
-                                    : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'
+                                onClick={() => isTakeawayModeEnabled && setSelectedMode('takeaway')}
+                                disabled={!isTakeawayModeEnabled}
+                                className={`p-4 md:p-6 rounded-xl border transition-all duration-300 flex flex-col items-center gap-3 md:gap-4 group relative ${!isTakeawayModeEnabled
+                                    ? 'opacity-50 cursor-not-allowed bg-white/5 border-white/5'
+                                    : selectedMode === 'takeaway'
+                                        ? 'bg-mitake-gold/10 border-mitake-gold text-mitake-gold'
+                                        : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/30'
                                     }`}
                             >
                                 <ShoppingBag size={40} className={`md:w-12 md:h-12 ${selectedMode === 'takeaway' ? 'text-mitake-gold' : 'text-gray-500 group-hover:text-white'}`} />
                                 <span className="text-lg md:text-xl font-bold">À Emporter</span>
+                                {!isTakeawayModeEnabled && (
+                                    <span className="absolute bottom-2 text-xs text-red-400 font-medium">Indisponible</span>
+                                )}
                             </button>
 
                             {/* Delivery */}

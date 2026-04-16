@@ -36,7 +36,14 @@ export const CartProvider = ({ children }) => {
     const [unavailableItems, setUnavailableItems] = useState([]); // Array of item IDs (using titles as IDs for now if no explicit ID)
     const [customPrices, setCustomPrices] = useState({}); // Dynamic supplement prices
     const [posBasePrices, setPosBasePrices] = useState({}); // Base prices from pos_products sync
-    const [isDeliveryModeEnabled, setIsDeliveryModeEnabled] = useState(true); // Separate delivery mode toggle
+    
+    // Feature Toggles (Order Modes)
+    const [isDeliveryModeEnabled, setIsDeliveryModeEnabled] = useState(true); 
+    const [isDineInModeEnabled, setIsDineInModeEnabled] = useState(true);
+    const [isTakeawayModeEnabled, setIsTakeawayModeEnabled] = useState(true);
+
+    // In-app Notification State
+    const [readyOrderEvent, setReadyOrderEvent] = useState(null); // { id: string, name: string } | null
 
     // Load admin state from Supabase on mount & Subscribe to changes
     useEffect(() => {
@@ -77,10 +84,16 @@ export const CartProvider = ({ children }) => {
                                     body: `Génial ! Votre commande ${newRecord.id.split('-')[0]} est PRÊTE ! 🎉`,
                                     icon: "/favicon.ico"
                                 });
-                            } else {
-                                // Fallback alert if they are still on the page
-                                alert(`🍜 MitaKe Ramen : Votre commande ${newRecord.id.split('-')[0]} est PRÊTE !`);
                             }
+                            
+                            // Trigger premium in-app modal globally
+                            setReadyOrderEvent({
+                                id: newRecord.id.split('-')[0],
+                                rawId: newRecord.id
+                            });
+                            
+                            // Formally we no longer do the basic browser `alert()` to avoid blocking user interaction
+                            // and provide a better UX.
                             
                             // Remove from tracked list
                             const updatedTracked = tracked.filter(id => id !== newRecord.id);
@@ -171,16 +184,18 @@ export const CartProvider = ({ children }) => {
                 if (settingsData.unavailable_items) {
                     const parsedPrices = {};
                     settingsData.unavailable_items.forEach(item => {
-                        if (item.startsWith('PRICE||')) {
-                            const [, name, priceStr] = item.split('||');
-                            parsedPrices[name] = parseFloat(priceStr);
-                        }
-                        if (item === 'SETTING||delivery_mode||false') {
-                            setIsDeliveryModeEnabled(false);
-                        }
-                        if (item === 'SETTING||delivery_mode||true') {
-                            setIsDeliveryModeEnabled(true);
-                        }
+                            if (item.startsWith('PRICE||')) {
+                                const [, name, priceStr] = item.split('||');
+                                parsedPrices[name] = parseFloat(priceStr);
+                            }
+                        if (item === 'SETTING||delivery_mode||false') setIsDeliveryModeEnabled(false);
+                        if (item === 'SETTING||delivery_mode||true') setIsDeliveryModeEnabled(true);
+                        
+                        if (item === 'SETTING||dinein_mode||false') setIsDineInModeEnabled(false);
+                        if (item === 'SETTING||dinein_mode||true') setIsDineInModeEnabled(true);
+
+                        if (item === 'SETTING||takeaway_mode||false') setIsTakeawayModeEnabled(false);
+                        if (item === 'SETTING||takeaway_mode||true') setIsTakeawayModeEnabled(true);
                     });
                     setCustomPrices(parsedPrices);
                 }
@@ -438,14 +453,20 @@ export const CartProvider = ({ children }) => {
         updateSettings, // Exposed for Admin
         isDeliveryModeEnabled, // Exposed for delivery toggle
         setIsDeliveryModeEnabled, // Exposed for Admin
+        isDineInModeEnabled,
+        setIsDineInModeEnabled,
+        isTakeawayModeEnabled,
+        setIsTakeawayModeEnabled,
         submitOrderToPOS,
         // New Logic
         waitTime,
         isStoreOpen: isStoreOpenState,
-        // Animations
+        // Animations & Modals
         flyingDots,
         cartBump,
-        triggerFlyingDot
+        triggerFlyingDot,
+        readyOrderEvent,
+        dismissReadyNotification: () => setReadyOrderEvent(null)
     };
 
     return (

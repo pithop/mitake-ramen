@@ -20,6 +20,7 @@ import { HelmetProvider, Helmet } from 'react-helmet-async';
 import SeoHead from './components/SeoHead';
 import StoreStatusBanner from './components/StoreStatusBanner';
 import StoreClosureModal from './components/StoreClosureModal';
+import OrderReadyModal from './components/OrderReadyModal';
 
 // Wrapper component to access context for OrderModeModal
 const AppContent = () => {
@@ -50,6 +51,7 @@ const AppContent = () => {
       <FlyingDotsOverlay />
       <CartDrawer />
       <FloatingCartButton />
+      <OrderReadyModal />
 
       <Routes>
         <Route path="/" element={

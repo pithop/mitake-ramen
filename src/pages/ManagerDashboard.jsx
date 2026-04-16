@@ -19,12 +19,19 @@ const ManagerDashboard = () => {
         unavailableItems,
         updateSettings,
         isDeliveryModeEnabled,
-        setIsDeliveryModeEnabled
+        setIsDeliveryModeEnabled,
+        isDineInModeEnabled,
+        setIsDineInModeEnabled,
+        isTakeawayModeEnabled,
+        setIsTakeawayModeEnabled
     } = useCart();
 
     const [localUnavailable, setLocalUnavailable] = useState([...unavailableItems]);
     const [localDelivery, setLocalDelivery] = useState(isDeliveryAvailable);
     const [localDeliveryMode, setLocalDeliveryMode] = useState(isDeliveryModeEnabled);
+    const [localDineInMode, setLocalDineInMode] = useState(isDineInModeEnabled);
+    const [localTakeawayMode, setLocalTakeawayMode] = useState(isTakeawayModeEnabled);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [editingPrices, setEditingPrices] = useState({});
 
@@ -40,6 +47,8 @@ const ManagerDashboard = () => {
         setLocalUnavailable([...unavailableItems]);
         setLocalDelivery(isDeliveryAvailable);
         setLocalDeliveryMode(isDeliveryModeEnabled);
+        setLocalDineInMode(isDineInModeEnabled);
+        setLocalTakeawayMode(isTakeawayModeEnabled);
         
         const newEditingPrices = {};
         unavailableItems.forEach(item => {
@@ -189,6 +198,40 @@ const ManagerDashboard = () => {
         // Build new unavailable items with updated delivery mode setting
         const filtered = localUnavailable.filter(item => !item.startsWith('SETTING||delivery_mode||'));
         const newUnavailable = [...filtered, `SETTING||delivery_mode||${newMode}`];
+        setLocalUnavailable(newUnavailable);
+        await updateSettings(localDelivery, newUnavailable);
+    };
+
+    const toggleDineInMode = async () => {
+        const newMode = !localDineInMode;
+        setLocalDineInMode(newMode);
+        setIsDineInModeEnabled(newMode);
+
+        if (newMode) {
+            addToast("Mode Sur Place ACTIVÉ", 'success');
+        } else {
+            addToast("Mode Sur Place DÉSACTIVÉ", 'info');
+        }
+
+        const filtered = localUnavailable.filter(item => !item.startsWith('SETTING||dinein_mode||'));
+        const newUnavailable = [...filtered, `SETTING||dinein_mode||${newMode}`];
+        setLocalUnavailable(newUnavailable);
+        await updateSettings(localDelivery, newUnavailable);
+    };
+
+    const toggleTakeawayMode = async () => {
+        const newMode = !localTakeawayMode;
+        setLocalTakeawayMode(newMode);
+        setIsTakeawayModeEnabled(newMode);
+
+        if (newMode) {
+            addToast("Mode À Emporter ACTIVÉ", 'success');
+        } else {
+            addToast("Mode À Emporter DÉSACTIVÉ", 'info');
+        }
+
+        const filtered = localUnavailable.filter(item => !item.startsWith('SETTING||takeaway_mode||'));
+        const newUnavailable = [...filtered, `SETTING||takeaway_mode||${newMode}`];
         setLocalUnavailable(newUnavailable);
         await updateSettings(localDelivery, newUnavailable);
     };
@@ -373,7 +416,7 @@ const ManagerDashboard = () => {
 
                 {/* Master Switch - Delivery Mode */}
                 <section className="bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center mb-6">
                         <div>
                             <h2 className="text-xl font-bold flex items-center gap-2">
                                 <Power size={20} className={localDeliveryMode ? "text-green-400" : "text-red-400"} />
@@ -382,7 +425,7 @@ const ManagerDashboard = () => {
                             <p className="text-gray-400 text-sm mt-1">
                                 {localDeliveryMode
                                     ? "✅ La livraison est ACTIVÉE sur le site."
-                                    : "⛔ La livraison est DÉSACTIVÉE (Les clients ne voient que Sur Place / À Emporter)."}
+                                    : "⛔ La livraison est DÉSACTIVÉE (Les clients ne la verront pas)."}
                             </p>
                         </div>
                         <button
@@ -390,6 +433,46 @@ const ManagerDashboard = () => {
                             className={`w-16 h-9 rounded-full p-1 transition-colors duration-300 ${localDeliveryMode ? 'bg-green-500' : 'bg-gray-600'}`}
                         >
                             <div className={`bg-white w-7 h-7 rounded-full shadow-md transform transition-transform duration-300 ${localDeliveryMode ? 'translate-x-7' : 'translate-x-0'}`} />
+                        </button>
+                    </div>
+                    
+                    <div className="flex justify-between items-center mb-6 pt-6 border-t border-white/10">
+                        <div>
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Power size={20} className={localTakeawayMode ? "text-green-400" : "text-red-400"} />
+                                Mode À Emporter
+                            </h2>
+                            <p className="text-gray-400 text-sm mt-1">
+                                {localTakeawayMode
+                                    ? "✅ Le retrait sur place est ACTIVÉ."
+                                    : "⛔ Le retrait sur place est DÉSACTIVÉ."}
+                            </p>
+                        </div>
+                        <button
+                            onClick={toggleTakeawayMode}
+                            className={`w-16 h-9 rounded-full p-1 transition-colors duration-300 ${localTakeawayMode ? 'bg-green-500' : 'bg-gray-600'}`}
+                        >
+                            <div className={`bg-white w-7 h-7 rounded-full shadow-md transform transition-transform duration-300 ${localTakeawayMode ? 'translate-x-7' : 'translate-x-0'}`} />
+                        </button>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-6 border-t border-white/10">
+                        <div>
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Power size={20} className={localDineInMode ? "text-green-400" : "text-red-400"} />
+                                Mode Sur Place
+                            </h2>
+                            <p className="text-gray-400 text-sm mt-1">
+                                {localDineInMode
+                                    ? "✅ Le service à table (Sur Place) est ACTIVÉ."
+                                    : "⛔ Le service à table est DÉSACTIVÉ."}
+                            </p>
+                        </div>
+                        <button
+                            onClick={toggleDineInMode}
+                            className={`w-16 h-9 rounded-full p-1 transition-colors duration-300 ${localDineInMode ? 'bg-green-500' : 'bg-gray-600'}`}
+                        >
+                            <div className={`bg-white w-7 h-7 rounded-full shadow-md transform transition-transform duration-300 ${localDineInMode ? 'translate-x-7' : 'translate-x-0'}`} />
                         </button>
                     </div>
                 </section>
