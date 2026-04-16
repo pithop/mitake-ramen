@@ -315,7 +315,7 @@ export const CartProvider = ({ children }) => {
             id: orderId,
             total: total,
             status: 'pending', // CRITIQUE : "pending" signifie que la caisse doit l'encaisser/valider
-            order_type: orderMode, // 'dine_in' | 'takeaway' | 'delivery'
+            order_type: orderMode === 'takeaway' ? 'emporte' : (orderMode === 'dine_in' ? 'sur_place' : orderMode), 
             source_device: 'website',
             customer_name: orderDetails.phone ? `${orderDetails.customerName || "Client Web"} - ${orderDetails.phone}` : (orderDetails.customerName || "Client Web"),
             pickup_time: orderDetails.pickupTime || new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
