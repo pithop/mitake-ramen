@@ -15,7 +15,6 @@ const CartDrawer = () => {
         orderMode,
         setIsOrderModeModalOpen,
         setIsOrderInterceptModalOpen,
-        waitTime,
         addToCart,
         isDeliveryAvailable
     } = useCart();
@@ -182,12 +181,12 @@ const CartDrawer = () => {
                                             <span className="text-gray-400">Total</span>
                                             <span className="text-white">{total.toFixed(2)} €</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-sm text-gray-400">
+                                        <div className="flex justify-between items-center text-xs sm:text-sm text-gray-400">
                                             <span>Temps d'attente estimé</span>
-                                            <span className="text-mitake-gold font-bold flex items-center gap-1">
-                                                <Clock size={14} />
-                                                {waitTime} min
-                                            </span>
+                                            <div className="text-mitake-gold font-bold flex flex-col items-end gap-0.5">
+                                                <span className="flex items-center gap-1"><Clock size={12} /> Sur Place / À Emporter : 10 - 25 min</span>
+                                                <span className="flex items-center gap-1"><Clock size={12} /> Livraison : 20 - 60 min</span>
+                                            </div>
                                         </div>
                                     </div>
 

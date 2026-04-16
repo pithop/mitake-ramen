@@ -26,7 +26,6 @@ export const CartProvider = ({ children }) => {
     const [cartBump, setCartBump] = useState(0);
 
     // Store Logic State
-    const [waitTime, setWaitTime] = useState(15);
     const [activeOrdersCount, setActiveOrdersCount] = useState(0);
     const [isStoreOpenState, setIsStoreOpenState] = useState(true); // Default true to avoid flash, updated on mount
 
@@ -113,12 +112,6 @@ export const CartProvider = ({ children }) => {
             clearInterval(statusInterval);
         };
     }, []);
-
-    // Recalculate wait time whenever cart or active orders change
-    useEffect(() => {
-        const time = calculateWaitTime(cartItems, activeOrdersCount);
-        setWaitTime(time);
-    }, [cartItems, activeOrdersCount]);
 
     const checkStoreStatus = () => {
         setIsStoreOpenState(isStoreOpen());
@@ -459,7 +452,6 @@ export const CartProvider = ({ children }) => {
         setIsTakeawayModeEnabled,
         submitOrderToPOS,
         // New Logic
-        waitTime,
         isStoreOpen: isStoreOpenState,
         // Animations & Modals
         flyingDots,
