@@ -72,6 +72,7 @@ const SignatureCarousel = () => {
                         </div>
                     </motion.div>
                 ))}
+                </div>
             </div>
         </section>
     );
