@@ -32,6 +32,22 @@ const ProductDetailModal = ({ item, isOpen, onClose }) => {
         }
     };
 
+    const addMultipleOption = (opt) => {
+        setSelectedOptions(prev => [...prev, opt]);
+    };
+
+    const removeMultipleOption = (optName) => {
+        setSelectedOptions(prev => {
+            const index = prev.findIndex(o => o.name === optName);
+            if (index > -1) {
+                const newArr = [...prev];
+                newArr.splice(index, 1);
+                return newArr;
+            }
+            return prev;
+        });
+    };
+
     const optionsTotal = selectedOptions.reduce((acc, opt) => acc + opt.price, 0);
     const totalPrice = (item.price + optionsTotal) * quantity;
 
@@ -152,7 +168,38 @@ const ProductDetailModal = ({ item, isOpen, onClose }) => {
                                                 ? customPrices[opt.name]
                                                 : opt.price;
                                             const dynamicOpt = { ...opt, price: activePrice };
-                                            const isSelected = selectedOptions.some(o => o.name === dynamicOpt.name);
+                                            const count = selectedOptions.filter(o => o.name === dynamicOpt.name).length;
+                                            const isSelected = count > 0;
+
+                                            if (opt.allowMultiple) {
+                                                return (
+                                                    <div key={idx} className={`w-full flex items-center justify-between p-3.5 rounded-xl border transition-all duration-200 ${count > 0 ? 'bg-mitake-gold/10 border-mitake-gold/40' : 'bg-white/[0.03] border-white/[0.06]'}`}>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className={`text-sm ${count > 0 ? 'text-mitake-offwhite' : 'text-gray-400'}`}>
+                                                                {dynamicOpt.name}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            {dynamicOpt.price > 0 && (
+                                                                <span className="text-mitake-gold text-sm font-medium">
+                                                                    + {dynamicOpt.price.toFixed(2)} €
+                                                                </span>
+                                                            )}
+                                                            <div className="flex items-center bg-black/40 rounded border border-white/10 shrink-0">
+                                                                <button
+                                                                    onClick={() => removeMultipleOption(dynamicOpt.name)}
+                                                                    className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                                                                >−</button>
+                                                                <span className="w-6 text-center text-white font-bold text-sm">{count}</span>
+                                                                <button
+                                                                    onClick={() => addMultipleOption(dynamicOpt)}
+                                                                    className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                                                                >+</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
 
                                             return (
                                                 <button

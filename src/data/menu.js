@@ -15,10 +15,8 @@ export const MENU_DATA = [
                 image: "https://www.sushi-aixsud.com/853-large_default/ramen-tonkotsu-classic.jpg",
                 tags: ["popular"],
                 availableOptions: [
-                    { name: "Supplément Oeuf Mollet", price: 1.5 },
-                    { name: "Supplément Chashu (2 tranches)", price: 3.0 },
-                    { name: "Sans Cébettes", price: 0 },
-                    { name: "Bouillon Pimenté", price: 0.5 },
+                    { name: "Supplément Oeuf Mollet", price: 1.5, allowMultiple: true },
+                    { name: "Supplément Spicy", price: 1.0 },
                     { name: "Taille Omori (Grand)", price: 4.0 }
                 ]
             },
@@ -33,9 +31,8 @@ export const MENU_DATA = [
                 image: "https://www.sushi-aixsud.com/852-large_default/ramen-tonkotsu-cha-shu.jpg",
                 tags: ["chef_choice", "meat_lover"],
                 availableOptions: [
-                    { name: "Supplément Oeuf Mollet", price: 1.5 },
-                    { name: "Sans Cébettes", price: 0 },
-                    { name: "Bouillon Pimenté", price: 0.5 },
+                    { name: "Supplément Oeuf Mollet", price: 1.5, allowMultiple: true },
+                    { name: "Supplément Spicy", price: 1.0 },
                     { name: "Taille Omori (Grand)", price: 4.0 }
                 ]
             },
@@ -50,8 +47,8 @@ export const MENU_DATA = [
                 image: "https://www.sushi-aixsud.com/854-large_default/maze-men-ramen-sans-bouillon.jpg",
                 tags: ["original", "spicy"],
                 availableOptions: [
-                    { name: "Supplément Poulet", price: 2.5 },
-                    { name: "Sans Oignons Frits", price: 0 },
+                    { name: "Supplément Oeuf Mollet", price: 1.5, allowMultiple: true },
+                    { name: "Supplément Spicy", price: 1.0 },
                     { name: "Taille Omori (Grand)", price: 4.0 }
                 ]
             }
@@ -71,6 +68,37 @@ export const MENU_DATA = [
                 longDescription: "Nos gyoza sont préparés à la main chaque jour. La farce, un mélange savoureux de poulet haché et de légumes croquants assaisonnés au gingembre et à l'ail, est enveloppée dans une fine pâte de blé grillée à la perfection — dorée et croustillante en dessous, tendre et moelleuse au-dessus. Servis avec notre sauce ponzu maison.",
                 allergens: ["Gluten", "Soja", "Sésame"],
                 image: "https://www.sushi-aixsud.com/226-large_default/gyoza-poulet-legumes.jpg",
+                qty_label: "6 pièces",
+                tags: ["popular"],
+                availableOptions: [
+                    { name: "Sauce Piquante", price: 0.5 },
+                    { name: "Supplément Spicy", price: 1.0 }
+                ]
+            },
+            {
+                id: "gyoza-crevettes",
+                name: "Gyoza crevettes",
+                posName: "Gyoza crevettes",
+                price: 8.65,
+                description: "6 Raviolis grillés maison à la crevette.",
+                longDescription: "Nos gyoza aux crevettes sont préparés avec une farce généreuse de crevettes et de légumes. Grillés à la perfection, croustillants en dessous et moelleux au-dessus.",
+                allergens: ["Crustacés", "Gluten", "Soja", "Sésame"],
+                image: "https://www.sushi-aixsud.com/227-large_default/gyoza-crevettes.jpg",
+                qty_label: "6 pièces",
+                tags: ["seafood"],
+                availableOptions: [
+                    { name: "Sauce Piquante", price: 0.5 }
+                ]
+            },
+            {
+                id: "gyoza-mixte",
+                name: "GYOZA PAR 6 poulet, crevettes, legumes",
+                posName: "GYOZA PAR 6 poulet, crevettes, legumes",
+                price: 7.50,
+                description: "Gyoza mixte : 2 poulet, 2 crevettes, 2 légumes.",
+                longDescription: "Idéal pour tout goûter ! Un assortiment de 6 de nos gyozas faits maison, pour un mélange parfait de saveurs.",
+                allergens: ["Crustacés", "Gluten", "Soja", "Sésame"],
+                image: "https://www.sushi-aixsud.com/111-large_default/gyoza-par-6-poulet-crevettes-legumes.jpg",
                 qty_label: "6 pièces",
                 tags: ["popular"],
                 availableOptions: [
@@ -139,16 +167,6 @@ export const MENU_DATA = [
                 allergens: ["Poisson", "Soja", "Gluten"],
                 image: "https://www.sushi-aixsud.com/124-large_default/saumon-teriyaki.jpg",
                 tags: ["healthy", "seafood"]
-            },
-            {
-                id: "una-chirashi",
-                name: "CHIRASHI ANGUILLE",
-                price: 20.43,
-                description: "Bol de riz Bio recouvert de tranches d'anguille grillée caramélisée (Unagi).",
-                longDescription: "Notre plat le plus raffiné. De fines tranches d'anguille (Unagi) grillées au charbon de bois et laquées d'une sauce Kabayaki sucrée-salée, disposées sur un bol de riz Bio vinaigré. L'anguille, considérée comme un mets délicat au Japon, offre une chair fondante et un goût unique, entre terre et mer. Un plat aussi beau que savoureux.",
-                allergens: ["Poisson", "Soja", "Gluten"],
-                image: "https://www.sushi-aixsud.com/259-large_default/una-chirashi.jpg",
-                tags: ["premium", "seafood"]
             }
         ]
     }
