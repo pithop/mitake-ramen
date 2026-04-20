@@ -234,33 +234,83 @@ const MenuSection = () => {
                                         : opt.price;
                                         
                                     const dynamicOpt = { ...opt, price: activePrice };
-                                    const isSelected = selectedOptionsModal.some(o => o.name === dynamicOpt.name);
+                                    
+                                    const optCount = selectedOptionsModal.filter(o => o.name === dynamicOpt.name).length;
+                                    const isSelected = optCount > 0;
+                                    const isMultipleAllowed = dynamicOpt.name.toLowerCase().includes('oeuf') || 
+                                                             dynamicOpt.name.toLowerCase().includes('œuf');
                                     
                                     return (
-                                        <label
+                                        <div
                                             key={idx}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                if (isSelected) {
-                                                    setSelectedOptionsModal(prev => prev.filter(o => o.name !== dynamicOpt.name));
-                                                } else {
-                                                    setSelectedOptionsModal(prev => [...prev, dynamicOpt]);
-                                                }
-                                            }}
-                                            className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all duration-300 ${isSelected
+                                            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${isSelected
                                                 ? 'bg-mitake-gold/10 border-mitake-gold/50'
                                                 : 'bg-black/30 border-white/10 hover:border-white/30'
                                                 }`}
                                         >
-                                            <div className="flex items-center gap-4">
+                                            <div 
+                                                className="flex items-center gap-4 flex-1 cursor-pointer"
+                                                onClick={(e) => {
+                                                    if (!isMultipleAllowed) {
+                                                        if (isSelected) {
+                                                            setSelectedOptionsModal(prev => prev.filter(o => o.name !== dynamicOpt.name));
+                                                        } else {
+                                                            setSelectedOptionsModal(prev => [...prev, dynamicOpt]);
+                                                        }
+                                                    } else {
+                                                        // Toggle logic fallback click when it's a multiple: if 0, add 1.
+                                                        if (optCount === 0) {
+                                                            setSelectedOptionsModal(prev => [...prev, dynamicOpt]);
+                                                        }
+                                                    }
+                                                }}
+                                            >
                                                 <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${isSelected ? 'bg-mitake-gold border-mitake-gold' : 'border-gray-500'
                                                     }`}>
                                                     {isSelected && <svg className="w-3 h-3 text-mitake-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                                                 </div>
                                                 <span className={`text-base ${isSelected ? 'text-mitake-offwhite' : 'text-gray-400'}`}>{dynamicOpt.name}</span>
                                             </div>
-                                            <span className="text-mitake-gold text-sm">+ {dynamicOpt.price.toFixed(2)} €</span>
-                                        </label>
+                                            
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-mitake-gold text-sm">+ {dynamicOpt.price.toFixed(2)} €</span>
+                                                
+                                                {isMultipleAllowed && (
+                                                    <div className="flex items-center gap-3 bg-black/50 rounded-lg p-1 border border-white/10" onClick={(e) => e.stopPropagation()}>
+                                                        <button 
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSelectedOptionsModal(prev => {
+                                                                    const index = prev.findIndex(o => o.name === dynamicOpt.name);
+                                                                    if (index > -1) {
+                                                                        const newArr = [...prev];
+                                                                        newArr.splice(index, 1);
+                                                                        return newArr;
+                                                                    }
+                                                                    return prev;
+                                                                });
+                                                            }}
+                                                            className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${optCount > 0 ? 'bg-white/10 hover:bg-mitake-red text-white' : 'text-gray-600'}`}
+                                                            disabled={optCount === 0}
+                                                        >
+                                                            <Minus size={14} />
+                                                        </button>
+                                                        <span className="w-4 text-center font-bold text-white">{optCount}</span>
+                                                        <button 
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSelectedOptionsModal(prev => [...prev, dynamicOpt]);
+                                                            }}
+                                                            className="w-6 h-6 rounded-md bg-white/10 hover:bg-mitake-gold hover:text-black transition-colors flex items-center justify-center text-white"
+                                                        >
+                                                            <Plus size={14} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     );
                                 })}
                             </div>
