@@ -57,20 +57,20 @@ const Footer = () => {
                     {/* Horaires */}
                     <div className="space-y-4 md:space-y-6">
                         <h4 className="text-lg font-serif font-bold text-mitake-gold">Horaires</h4>
-                        <div className="space-y-2 text-sm text-gray-400 font-light">
-                            <div className="flex justify-between max-w-[280px]">
+                        <div className="space-y-3 text-sm text-gray-400 font-light">
+                            <div className="flex justify-between gap-4">
                                 <span>Mercredi</span>
-                                <span>11h30-14h00</span>
+                                <span className="text-right">11h30-14h00</span>
                             </div>
-                            <div className="flex justify-between max-w-[280px]">
-                                <span>Mardi, Jeudi, Vendredi</span>
-                                <span>11h30-14h00 & 18h00-21h00</span>
+                            <div className="flex justify-between gap-4">
+                                <span>Mar, Jeu, Ven</span>
+                                <span className="text-right">11h30-14h00<br/>18h00-21h00</span>
                             </div>
-                            <div className="flex justify-between max-w-[280px]">
+                            <div className="flex justify-between gap-4">
                                 <span>Samedi</span>
-                                <span>18h00 - 21h00</span>
+                                <span className="text-right">18h00 - 21h00</span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-4 italic">Fermé Lundi &  Dimanche</p>
+                            <p className="text-xs text-gray-500 mt-4 italic">Fermé Lundi & Dimanche</p>
                         </div>
                     </div>
                 </div>

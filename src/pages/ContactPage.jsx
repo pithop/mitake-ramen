@@ -42,7 +42,7 @@ const ContactPage = () => {
                             <div>
                                 <h2 className="text-xl font-bold mb-1 text-mitake-offwhite">MitaKe Restaurant</h2>
                                 <p className="text-gray-400 leading-relaxed">
-                                    [Insérer l'adresse exacte du restaurant ici]<br/>
+                                    569 Av. Henri Mauriat<br/>
                                     13100 Aix-en-Provence<br/>
                                     France
                                 </p>
@@ -51,11 +51,13 @@ const ContactPage = () => {
 
                         <div className="flex items-start gap-4 p-6 bg-white/5 border border-white/10 rounded-2xl">
                             <Clock className="text-mitake-gold shrink-0 mt-1" size={24} />
-                            <div>
+                            <div className="w-full">
                                 <h2 className="text-xl font-bold mb-3 text-mitake-offwhite">Horaires d'Ouverture</h2>
-                                <ul className="text-gray-400 space-y-2">
-                                    <li className="flex justify-between gap-10"><span>Lundi - Dimanche</span> <span className="text-white">11h30 - 22h30</span></li>
-                                    <li className="flex justify-between gap-10 pt-2 border-t border-white/10 text-sm italic mt-2">Services en continu et Click&Collect</li>
+                                <ul className="text-gray-400 space-y-2 w-full text-sm">
+                                    <li className="flex justify-between gap-4"><span>Mercredi</span> <span className="text-white text-right">11h30 - 14h00</span></li>
+                                    <li className="flex justify-between gap-4"><span>Mar, Jeu, Ven</span> <span className="text-white text-right">11h30-14h00<br/>18h00-21h00</span></li>
+                                    <li className="flex justify-between gap-4"><span>Samedi</span> <span className="text-white text-right">18h00 - 21h00</span></li>
+                                    <li className="pt-3 border-t border-white/10 text-gray-500 italic mt-3">Fermé Lundi & Dimanche</li>
                                 </ul>
                             </div>
                         </div>
@@ -64,8 +66,8 @@ const ContactPage = () => {
                             <Phone className="text-mitake-gold shrink-0 mt-1" size={24} />
                             <div>
                                 <h2 className="text-xl font-bold mb-1 text-mitake-offwhite">Nous Appeler</h2>
-                                <a href="tel:+33412345678" className="text-gray-400 hover:text-mitake-gold transition-colors block">
-                                    09 87 65 43 21
+                                <a href="tel:+33972213899" className="text-gray-400 hover:text-mitake-gold transition-colors block">
+                                    09 72 21 38 99
                                 </a>
                             </div>
                         </div>
@@ -79,11 +81,16 @@ const ContactPage = () => {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="h-full min-h-[400px] w-full bg-white/5 rounded-2xl overflow-hidden border border-white/10 relative"
                 >
-                    {/* iFrame d'exemple, l'utilisateur devra insérer le sien de GMB */}
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-500 flex-col gap-3 p-10 text-center bg-black/50 backdrop-blur-sm z-10">
-                        <MapPin size={48} className="text-gray-600" />
-                        <p>L'intégration Google Maps (iframe) sera placée ici pour booster votre SEO Local sur "Restaurant Aix-en-Provence".</p>
-                    </div>
+                    <iframe 
+                        src="https://maps.google.com/maps?q=569%20Av.%20Henri%20Mauriat,%2013100%20Aix-en-Provence&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                        width="100%" 
+                        height="100%" 
+                        style={{border: 0, position: 'absolute', top: 0, left: 0}} 
+                        allowFullScreen="" 
+                        loading="lazy" 
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="Google Maps MitaKe Ramen"
+                    ></iframe>
                 </motion.div>
             </main>
 
