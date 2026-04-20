@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Flame, Settings, Truck, LogOut, WifiOff, Monitor } from 'lucide-react';
 import { useAdminAuth } from '../hooks/useAdminAuth';
+import { Helmet } from 'react-helmet-async';
 
 const AdminNavbar = () => {
     const location = useLocation();
@@ -31,6 +32,9 @@ const AdminNavbar = () => {
 
     return (
         <nav className="bg-mitake-black border-b border-white/10 p-4 sticky top-0 z-50">
+            <Helmet>
+                <meta name="robots" content="noindex" />
+            </Helmet>
             <div className="max-w-7xl mx-auto flex justify-between items-center overflow-x-auto">
                 <div className="flex items-center gap-6">
                     <h1 className="text-xl font-serif font-bold text-white hidden md:block">

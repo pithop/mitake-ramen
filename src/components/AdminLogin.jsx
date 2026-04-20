@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lock } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const AdminLogin = ({ onLogin }) => {
     const [password, setPassword] = useState('');
@@ -61,6 +62,9 @@ const AdminLogin = ({ onLogin }) => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] p-4">
+            <Helmet>
+                <meta name="robots" content="noindex" />
+            </Helmet>
             <div className="w-full max-w-md p-8 bg-mitake-black/50 border border-mitake-red/30 rounded-lg backdrop-blur-sm">
                 <div className="flex justify-center mb-6">
                     <div className="p-3 bg-mitake-red/10 rounded-full">

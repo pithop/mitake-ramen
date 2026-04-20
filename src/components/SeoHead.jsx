@@ -2,8 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const SeoHead = ({ title, description, canonicalUrl, image }) => {
-    const defaultTitle = "Mitake Ramen | Le Vrai Ramen à Aix-en-Provence (Sur Place & Livraison)";
-    const defaultDescription = "Dégustez les meilleurs Ramen d'Aix-en-Provence chez Mitake. Bouillon maison Tonkotsu & Miso, nouilles fraîches et Gyoza. Livraison rapide ou à emporter.";
+    const defaultTitle = "MitaKe Ramen | Restaurant Japonais & Vrai Ramen à Aix-en-Provence";
+    const defaultDescription = "Restaurant MitaKe à Aix-en-Provence : Dégustez d'authentiques Ramen japonais, bouillons Tonkotsu mijotés maison, et Gyozas croustillants. Sur place ou livraison.";
     const siteName = "Mitake Ramen";
     const defaultImage = "/assets/hero-ramen.png";
     const fullImage = image || defaultImage;

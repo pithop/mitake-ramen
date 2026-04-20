@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin-mitake
+Disallow: /admin/
+Disallow: /admin
 
 Sitemap: https://mitakeramen.page/sitemap.xml

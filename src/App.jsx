@@ -21,6 +21,8 @@ import SeoHead from './components/SeoHead';
 import StoreStatusBanner from './components/StoreStatusBanner';
 import StoreClosureModal from './components/StoreClosureModal';
 import OrderReadyModal from './components/OrderReadyModal';
+import MenuPage from './pages/MenuPage';
+import ContactPage from './pages/ContactPage';
 
 // Wrapper component to access context for OrderModeModal
 const AppContent = () => {
@@ -66,6 +68,8 @@ const AppContent = () => {
             <Footer />
           </div>
         } />
+        <Route path="/menu" element={<MenuPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/admin/kitchen" element={<KitchenDashboard />} />
         <Route path="/admin/manager" element={<ManagerDashboard />} />
         <Route path="/admin/delivery" element={<DeliveryDashboard />} />

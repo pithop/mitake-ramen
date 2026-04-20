@@ -76,17 +76,21 @@ const Hero = () => {
                         className="fixed inset-0 bg-mitake-black/95 backdrop-blur-2xl z-40 flex items-center justify-center"
                     >
                         <div className="flex flex-col items-center gap-8">
-                            {['L\'Atelier', 'Le Comptoir', 'Contact'].map((item, index) => (
-                                <motion.button
-                                    key={item}
+                            {[ 
+                                { label: 'Accueil', path: '/' },
+                                { label: 'La Carte', path: '/menu' }, 
+                                { label: 'Contact', path: '/contact' }
+                            ].map((item, index) => (
+                                <motion.a
+                                    key={item.label}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 + index * 0.1 }}
-                                    onClick={() => scrollToSection(item === 'Contact' ? 'footer' : 'menu')}
-                                    className="text-3xl md:text-5xl font-serif text-mitake-offwhite hover:text-mitake-gold transition-colors italic"
+                                    href={item.path}
+                                    className="text-3xl md:text-5xl font-serif text-mitake-offwhite hover:text-mitake-gold transition-colors italic block"
                                 >
-                                    {item}
-                                </motion.button>
+                                    {item.label}
+                                </motion.a>
                             ))}
                         </div>
                     </motion.div>
@@ -112,7 +116,6 @@ const Hero = () => {
                                 {char}
                             </motion.span>
                         ))}
-                        <span className="sr-only">Aix-en-Provence</span>
                     </h1>
                 </div>
 
@@ -121,9 +124,9 @@ const Hero = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1.5, delay: 1.5, ease: "easeOut" }}
                 >
-                    <p className="text-mitake-gold/90 text-xs md:text-sm tracking-[0.3em] md:tracking-[0.4em] uppercase font-light">
-                        L'Artisanat du Bouillon à Aix-en-Provence
-                    </p>
+                    <h2 className="text-mitake-gold/90 text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase font-light">
+                        Restaurant Japonais & L'Artisan du Vrai Ramen à Aix-en-Provence
+                    </h2>
                 </motion.div>
             </div>
 

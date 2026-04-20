@@ -10,7 +10,7 @@ const Footer = () => {
     return (
         <footer id="footer" className="bg-mitake-dark text-white py-10 md:py-20 border-t border-white/5 relative z-10">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-10 md:mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
 
                     {/* Brand */}
                     <div className="space-y-4 md:space-y-6">
@@ -32,6 +32,16 @@ const Footer = () => {
                             <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-mitake-gold hover:text-black transition-all duration-300">
                                 <Facebook size={18} />
                             </a>
+                        </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="space-y-4 md:space-y-6">
+                        <h4 className="text-lg font-serif font-bold text-mitake-gold">Menu & Nav</h4>
+                        <div className="flex flex-col space-y-3 text-sm text-gray-400 font-light">
+                            <a href="/" className="hover:text-mitake-gold transition-colors">Accueil</a>
+                            <a href="/menu" className="hover:text-mitake-gold transition-colors">La Carte & Menu</a>
+                            <a href="/contact" className="hover:text-mitake-gold transition-colors">Accès & Horaires</a>
                         </div>
                     </div>
 
