@@ -1,11 +1,10 @@
 import jsPDF from 'jspdf';
 
 /**
- * Generates a professional PDF ticket for the order
+ * Generates a professional PDF preparation ticket for the kitchen/customer (KDS)
  * @param {Object} orderData - The order data object
  * @param {Object} orderDetails - Customer details (name, phone, notes, etc.)
  * @param {Array} cartItems - Array of cart items
- * @param {number} total - Order total total
  */
 export const generateOrderTicket = (orderData, orderDetails, cartItems, total) => {
     const doc = new jsPDF();
@@ -71,7 +70,7 @@ export const generateOrderTicket = (orderData, orderDetails, cartItems, total) =
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 0, 0);
-    doc.text("INFORMATIONS DE COMMANDE", 25, yPos);
+    doc.text("BON DE PRÉPARATION", 25, yPos);
 
     yPos += 7;
     doc.setFont('helvetica', 'normal');
@@ -111,7 +110,7 @@ export const generateOrderTicket = (orderData, orderDetails, cartItems, total) =
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.setTextColor(0, 0, 0);
-    doc.text("DÉTAILS DE VOTRE COMMANDE", 20, yPos);
+    doc.text("DÉTAILS DE LA COMMANDE", 20, yPos);
 
     yPos += 8;
     // Table header
@@ -122,9 +121,7 @@ export const generateOrderTicket = (orderData, orderDetails, cartItems, total) =
     doc.setFontSize(9);
     doc.setTextColor(255, 255, 255);
     doc.text("QTÉ", 25, yPos);
-    doc.text("ARTICLE", 45, yPos);
-    doc.text("PRIX UNIT.", 140, yPos);
-    doc.text("TOTAL", 175, yPos, { align: 'right' });
+    doc.text("ARTICLE A PRÉPARER", 45, yPos);
 
     yPos += 8;
     doc.setFont('helvetica', 'normal');
@@ -138,33 +135,19 @@ export const generateOrderTicket = (orderData, orderDetails, cartItems, total) =
             doc.rect(20, yPos - 5, 170, 7, 'F');
         }
 
-        const unitPrice = item.price;
-        const itemTotal = unitPrice * item.quantity;
-
         doc.text(`${item.quantity}`, 25, yPos);
 
         // Wrap long item names
-        const itemName = doc.splitTextToSize(item.name, 90);
-        doc.text(itemName, 45, yPos);
+        let itemFullText = item.name;
+        if (item.options && item.options.length > 0) {
+            itemFullText += ` (+ ${item.options.map(o => o.name).join(', ')})`;
+        }
 
-        doc.text(`${unitPrice.toFixed(2)} €`, 140, yPos);
-        doc.text(`${itemTotal.toFixed(2)} €`, 185, yPos, { align: 'right' });
+        const itemName = doc.splitTextToSize(itemFullText, 140);
+        doc.text(itemName, 45, yPos);
 
         yPos += 7 * itemName.length;
     });
-
-    // === TOTAL ===
-    yPos += 5;
-    doc.setLineWidth(0.5);
-    doc.setDrawColor(0, 0, 0);
-    doc.line(130, yPos, 190, yPos);
-
-    yPos += 8;
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(218, 165, 32);
-    doc.text("TOTAL:", 130, yPos);
-    doc.text(`${total.toFixed(2)} €`, 185, yPos, { align: 'right' });
 
     // === FOOTER MESSAGE ===
     yPos = 250;
@@ -194,5 +177,5 @@ export const generateOrderTicket = (orderData, orderDetails, cartItems, total) =
     doc.rect(0, 289, pageWidth, 8, 'F');
 
     // Save/Download PDF
-    doc.save(`mitake-ticket-${orderData.order_number}.pdf`);
+    doc.save(`mitake-bon-preparation-${orderData.order_number}.pdf`);
 };
